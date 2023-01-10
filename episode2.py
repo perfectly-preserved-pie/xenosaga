@@ -53,3 +53,6 @@ df = pd.DataFrame(
         'Cash': cash
     }
 )
+
+# Replace weird Unicode formatting with the actual ampersand
+df['Name'] = df['Name'].replace('&amp;', '&', regex=True)
