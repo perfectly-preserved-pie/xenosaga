@@ -1,4 +1,5 @@
-from dash import dash_table, dash, html
+from dash import dash_table, html
+import dash
 import dash_bootstrap_components as dbc
 import logging
 import pandas as pd
@@ -17,5 +18,10 @@ external_stylesheets = [dbc.icons.BOOTSTRAP, dbc.icons.FONT_AWESOME]
 # Make the dataframe a global variable
 global df
 
-# import the dataframe json file
-df = pd.read_json('/json/episode2.json')
+layout = html.Div(children=[
+    html.H1(children='This is our Episode 3 page'),
+
+    html.Div(children='''
+        This is our Ep3 page content.
+    '''),
+])

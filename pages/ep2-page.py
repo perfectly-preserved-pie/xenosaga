@@ -1,4 +1,5 @@
-from dash import dash_table, dash, html
+from dash import dash_table, html
+import dash
 import dash_bootstrap_components as dbc
 import logging
 import pandas as pd
@@ -6,8 +7,8 @@ import pandas as pd
 dash.register_page( # https://dash.plotly.com/urls#dash.register_page
     __name__,
     path='/ep2', # URL path
-    title='Xenosaga Episode II: Jenseits von Gut und Böse Enemy Database', # HTML title
-    name='Xenosaga Episode II: Jenseits von Gut und Böse Enemy Database', 
+    title='Xenosaga Episode II: Jenseits von Gut und Böse', # HTML title
+    name='Xenosaga Episode II: Jenseits von Gut und Böse', 
     )
 
 logging.getLogger().setLevel(logging.INFO)
@@ -18,7 +19,7 @@ external_stylesheets = [dbc.icons.BOOTSTRAP, dbc.icons.FONT_AWESOME]
 global df
 
 # import the dataframe json file
-df = pd.read_json('/json/episode2.json')
+df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode2.json')
 
 # Create the Dash DataTable
 table = dash_table.DataTable(
@@ -176,24 +177,6 @@ table = dash_table.DataTable(
 page_title_card = dbc.Card(
   [
     html.H3("Xenosaga Episode II: Jenseits von Gut und Böse Enemy Database", className="card-title"),
-    html.P("A searchable database of enemies in Xenosaga Episode II."),
-    html.P(f"Click on the other tabs to see enemy list for the other games."),
-    html.I( # use a GitHub icon for my repo
-      className="bi bi-github",
-      style = {
-        "margin-right": "5px",
-        "margin-left": "5px"
-      },
-    ),
-    html.A("GitHub", href='https://github.com/perfectly-preserved-pie/xenosaga', target='_blank'),
-    html.I( # Add an icon for my blog
-      className="fa-solid fa-blog",
-      style = {
-        "margin-right": "5px",
-        "margin-left": "15px"
-      },
-    ),
-    html.A("About This Project", href='https://automateordie.io/xenosaga/', target='_blank'),
   ],
   body = True
 )

@@ -1,7 +1,7 @@
-from dash import Dash, html, dcc, dash
+from dash import Dash, html, dcc
+import dash
 import dash_bootstrap_components as dbc
 import logging
-import pandas as pd
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -9,9 +9,6 @@ external_stylesheets = [dbc.icons.BOOTSTRAP, dbc.icons.FONT_AWESOME]
 
 # Make the dataframe a global variable
 global df
-
-# import the dataframe json file
-df = pd.read_json('/json/episode2.json')
 
 app = Dash(
   __name__, 
@@ -25,8 +22,8 @@ app = Dash(
 )
 
 # Set the page title
-app.title = "Xenosaga Enemies"
-app.description = "A filterable and searchable table of all enemies in the Xenosaga series."
+app.title = "Xenosaga Enemy Database"
+app.description = "A filterable and searchable table of all enemies in the Xenosaga series, separated by game."
 
 # For Gunicorn
 server = app.server
@@ -54,14 +51,10 @@ app.index_string = """<!DOCTYPE html>
 </html>
 """
 
-
-
-# Add the DataTable to the app layout
-
 title_card = dbc.Card(
   [
-    html.H3("Xenosaga: Enemy List", className="card-title"),
-    html.P("A searchable list of enemies in the Xenosaga series."),
+    html.H3("Xenosaga Enemy Database", className="card-title"),
+    html.P("A searchable list of enemies in the Xenosaga series, separated by game."),
     html.P(f"Click on the other tabs to see enemy list for the other games."),
     html.I( # use a GitHub icon for my repo
       className="bi bi-github",
