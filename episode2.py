@@ -56,3 +56,6 @@ df = pd.DataFrame(
 
 # Replace weird Unicode formatting with the actual ampersand
 df['Name'] = df['Name'].replace('&amp;', '&', regex=True)
+
+# Export to JSON
+df.to_json('episode2.json')
