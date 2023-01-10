@@ -14,9 +14,6 @@ global df
 # import the dataframe json file
 df = pd.read_json('episode2.json')
 
-# Replace weird Unicode formatting with the actual ampersand
-df['Name'] = df['Name'].replace('&amp;', '&', regex=True)
-
 app = Dash(
   __name__, 
   external_stylesheets=external_stylesheets,
