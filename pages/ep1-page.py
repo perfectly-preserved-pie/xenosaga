@@ -19,7 +19,7 @@ external_stylesheets = [dbc.icons.BOOTSTRAP, dbc.icons.FONT_AWESOME]
 global df
 
 # import the dataframe json file
-df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode2.json')
+df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode1.json')
 
 # Create the Dash DataTable
 table = dash_table.DataTable(
