@@ -82,7 +82,7 @@ app.layout = dbc.Container([
       dbc.Col([title_card]),
     ]
   ),
-  dbc.Row( # Second row: the rest
+  dbc.Row(
     [
     html.Div(
     [

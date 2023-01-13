@@ -6,7 +6,7 @@ import pandas as pd
 
 dash.register_page( # https://dash.plotly.com/urls#dash.register_page
     __name__,
-    path='/ep1', # URL path
+    path='/', # URL path
     title='Xenosaga Episode I - Der Wille zur Macht', # HTML title
     name='Xenosaga Episode I - Der Wille zur Macht', 
     )
