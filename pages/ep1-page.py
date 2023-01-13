@@ -6,9 +6,9 @@ import pandas as pd
 
 dash.register_page( # https://dash.plotly.com/urls#dash.register_page
     __name__,
-    path='/ep2', # URL path
-    title='Xenosaga Episode II: Jenseits von Gut und Böse', # HTML title
-    name='Xenosaga Episode II: Jenseits von Gut und Böse', 
+    path='/ep1', # URL path
+    title='Xenosaga Episode I - Der Wille zur Macht', # HTML title
+    name='Xenosaga Episode I - Der Wille zur Macht', 
     )
 
 logging.getLogger().setLevel(logging.INFO)
@@ -176,7 +176,7 @@ table = dash_table.DataTable(
 
 page_title_card = dbc.Card(
   [
-    html.H3("Xenosaga Episode II: Jenseits von Gut und Böse Enemy Database", className="card-title"),
+    html.H3("Xenosaga Episode I - Der Wille zur Macht Enemy Database", className="card-title"),
   ],
   body = True
 )
