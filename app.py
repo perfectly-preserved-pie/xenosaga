@@ -54,8 +54,6 @@ app.index_string = """<!DOCTYPE html>
 title_card = dbc.Card(
   [
     html.H3("Xenosaga Enemy Database", className="card-title"),
-    html.P("A searchable list of enemies in the Xenosaga series, separated by game."),
-    html.P(f"Click on the other tabs to see enemy list for the other games."),
     html.I( # use a GitHub icon for my repo
       className="bi bi-github",
       style = {
@@ -72,6 +70,7 @@ title_card = dbc.Card(
       },
     ),
     html.A("About This Project", href='https://automateordie.io/xenosaga/', target='_blank'),
+    html.P("Click on the other tabs to see enemy list for the other games."),
   ],
   body = True
 )
