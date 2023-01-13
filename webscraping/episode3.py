@@ -56,21 +56,41 @@ type = re.findall(r'Enemy Type:([A-Z\s]+)[^|]*', str(text))
 type = [x.replace(" ", "") for x in type]
 # Remove the first element in the type list because it's empty
 del type[0]
+# This regex will match any string that starts with "AB: " followed by one or more characters that are not "|" 
+ab = re.findall(r'AB:\s([^|]+)', str(text))
+# and so on...
+wk = re.findall(r'WK:\s([^|]+)', str(text))
+sg = re.findall(r'SG:\s([^|]+)', str(text))
+ne = re.findall(r'NE:\s([^|]+)', str(text))
+# Remove trailing whitespaces from these lists
+ab = [x.strip() for x in ab]
+wk = [x.strip() for x in wk]
+sg = [x.strip() for x in sg]
+ne = [x.strip() for x in ne]
+# Again, drop the first element because it's empty
+del ab[0]
+del wk[0]
+del sg[0]
+
 
 # And now, all of our lists have the same length, so we can create a Pandas DataFrame
 df = pd.DataFrame(
     {
         'Name': names,
-        'HP': hp,   
-        'Weakness': weaknesses,
+        'HP': hp,
         'EXP': exp,
-        'TP': tp,
         'EP': ep,
         'SP': sp,
-        'Rare': rare,
-        'Item': item,
+        'Gold': gold,
+        'Break Limit': bl,
+        'Normal Drop': item,
+        'Rare Drop': rare,
+        'Stealable Item': superrare,
         'Type': type,
-        'Cash': cash
+        'Absorbs Element': ab,
+        'Weak to Element': wk,
+        'Strong Against Element': sg,
+        'Not Affected by Element': ne
     }
 )
 
