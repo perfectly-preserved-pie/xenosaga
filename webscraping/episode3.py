@@ -27,7 +27,7 @@ names = [elem.strip(".") for elem in names]
 # Remove everything before the first whitespace
 names = [elem.split(" ", 1)[1] for elem in names]
 # The regex didn't capture enemy #63 Yuriev Soldier A so we're gonna have to insert that manually
-names.insert(62, "Yuriev Soldier A")
+names.insert(61, "Yuriev Soldier A")
 # And now we have the right amount of names... finally
 # Craft a Python regex to get all numbers and commas after "HP: " but before any number of whitespaces followed by "|"
 hp = re.findall(r'HP:\s*([\d,]+)[^|]*', str(text))
