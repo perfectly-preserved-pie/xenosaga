@@ -22,6 +22,7 @@ text = soup.find_all("div", class_="faqtext", id="faqtext")
 names = re.findall(r'\.{18,}([^\r\n]+)\.{12}\r\n', str(text))
 # Remove the first five elements because they're not enemies
 names = names[5:]
+# Remove leading and trailing dots from all elements in the list
 names = [elem.strip(".") for elem in names]
 # Remove everything before the first whitespace
 names = [elem.split(" ", 1)[1] for elem in names]
