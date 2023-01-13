@@ -4,7 +4,6 @@ import dash_bootstrap_components as dbc
 import logging
 import pandas as pd
 
-
 logging.getLogger().setLevel(logging.INFO)
 
 external_stylesheets = [dbc.icons.BOOTSTRAP, dbc.icons.FONT_AWESOME]
@@ -25,7 +24,7 @@ app = Dash(
 
 # Set the page title
 app.title = "Xenosaga Enemy Database"
-app.description = "A filterable and searchable table of all enemies in the Xenosaga series, separated by game."
+app.description = "A searchable and sortable table of all enemies in the Xenosaga series, separated by game."
 
 # For Gunicorn
 server = app.server
@@ -72,7 +71,7 @@ title_card = dbc.Card(
       },
     ),
     html.A("About This Project", href='https://automateordie.io/xenosaga/', target='_blank'),
-    html.P("This is a searchable and filterable table of all enemies in the Xenosaga series, separated by game."),
+    html.P("This is a searchable and sortable table of all enemies in the Xenosaga series, separated by game."),
     html.P("Click on the other tabs to see enemy list for the other games."),
   ],
   body = True
@@ -84,14 +83,16 @@ tabs = dcc.Tabs(
   value="ep1",
   children=[
     dcc.Tab(label="Xenosaga Episode I", value="ep1"),
+    dcc.Tab(label="Xenosaga Episode II", value="ep2"),
     dcc.Tab(label="Xenosaga Episode III", value="ep3"),
   ]
 )
 
 # Create the tables
 # import the dataframe json file
-ep3_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode3.json')
 ep1_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode1.json')
+#ep2_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode2.json')
+ep3_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode3.json')
 
 # Create the Dash DataTable for episode 1
 ep1_table = dash_table.DataTable(
