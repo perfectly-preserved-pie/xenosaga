@@ -96,3 +96,6 @@ df = pd.DataFrame(
 
 # Replace missing values with "N/A"
 df.replace('', 'N/A', inplace=True)
+
+# Export dataframe to JSON
+df.to_json('episode3.json', orient='records')
