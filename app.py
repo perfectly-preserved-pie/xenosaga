@@ -1,7 +1,9 @@
-from dash import Dash, html, dcc
-import dash
+from dash import Dash, html, dcc, dash_table
+from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import logging
+import pandas as pd
+
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -13,7 +15,7 @@ global df
 app = Dash(
   __name__, 
   external_stylesheets=external_stylesheets,
-  use_pages=True,
+  use_pages=False,
   # Add meta tags for mobile devices
   # https://community.plotly.com/t/reorder-website-for-mobile-view/33669/5?
   meta_tags = [
@@ -70,38 +72,233 @@ title_card = dbc.Card(
       },
     ),
     html.A("About This Project", href='https://automateordie.io/xenosaga/', target='_blank'),
+    html.P("This is a searchable and filterable table of all enemies in the Xenosaga series, separated by game."),
     html.P("Click on the other tabs to see enemy list for the other games."),
   ],
   body = True
 )
 
+# Create the tabs
+tabs = dcc.Tabs(
+  id="tabs",
+  value="ep1",
+  children=[
+    dcc.Tab(label="Xenosaga Episode I", value="ep1"),
+    dcc.Tab(label="Xenosaga Episode III", value="ep3"),
+  ]
+)
+
+# Create the tables
+# import the dataframe json file
+ep3_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode3.json')
+ep1_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode1.json')
+
+# Create the Dash DataTable for episode 1
+ep1_table = dash_table.DataTable(
+    columns=[
+        {"name": i, "id": i} for i in ep1_df.columns
+    ],
+    data=ep1_df.to_dict("records"),
+    tooltip_data=[
+        {
+            'Name': {'value': f"""
+            Name: {row['Name']}
+            HP: {row['HP']}
+            Weakness: {row['Weakness']}
+            EXP: {row['EXP']}
+            TP: {row['TP']}
+            EP: {row['EP']}
+            SP: {row['SP']}
+            Rare: {row['Rare']}
+            Item: {row['Item']}
+            Type: {row['Type']}
+            Cash: {row['Cash']}""", 'type': 'markdown'},
+            'HP': {'value': f"""
+            Name: {row['Name']}
+            HP: {row['HP']}
+            Weakness: {row['Weakness']}
+            EXP: {row['EXP']}
+            TP: {row['TP']}
+            EP: {row['EP']}
+            SP: {row['SP']}
+            Rare: {row['Rare']}
+            Item: {row['Item']}
+            Type: {row['Type']}
+            Cash: {row['Cash']}""", 'type': 'markdown'},
+            'Weakness': {'value': f"""
+            Name: {row['Name']}
+            HP: {row['HP']}
+            Weakness: {row['Weakness']}
+            EXP: {row['EXP']}
+            TP: {row['TP']}
+            EP: {row['EP']}
+            SP: {row['SP']}
+            Rare: {row['Rare']}
+            Item: {row['Item']}
+            Type: {row['Type']}
+            Cash: {row['Cash']}""", 'type': 'markdown'},
+            'EXP': {'value': f"""
+            Name: {row['Name']}
+            HP: {row['HP']}
+            Weakness: {row['Weakness']}
+            EXP: {row['EXP']}
+            TP: {row['TP']}
+            EP: {row['EP']}
+            SP: {row['SP']}
+            Rare: {row['Rare']}
+            Item: {row['Item']}
+            Type: {row['Type']}
+            Cash: {row['Cash']}""", 'type': 'markdown'},
+            'TP': {'value': f"""
+            Name: {row['Name']}
+            HP: {row['HP']}
+            Weakness: {row['Weakness']}
+            EXP: {row['EXP']}
+            TP: {row['TP']}
+            EP: {row['EP']}
+            SP: {row['SP']}
+            Rare: {row['Rare']}
+            Item: {row['Item']}
+            Type: {row['Type']}
+            Cash: {row['Cash']}""", 'type': 'markdown'},
+            'EP': {'value': f"""
+            Name: {row['Name']}
+            HP: {row['HP']}
+            Weakness: {row['Weakness']}
+            EXP: {row['EXP']}
+            TP: {row['TP']}
+            EP: {row['EP']}
+            SP: {row['SP']}
+            Rare: {row['Rare']}
+            Item: {row['Item']}
+            Type: {row['Type']}
+            Cash: {row['Cash']}""", 'type': 'markdown'},
+            'SP': {'value': f"""
+            Name: {row['Name']}
+            HP: {row['HP']}
+            Weakness: {row['Weakness']}
+            EXP: {row['EXP']}
+            TP: {row['TP']}
+            EP: {row['EP']}
+            SP: {row['SP']}
+            Rare: {row['Rare']}
+            Item: {row['Item']}
+            Type: {row['Type']}
+            Cash: {row['Cash']}""", 'type': 'markdown'},
+            'Rare': {'value': f"""
+            Name: {row['Name']}
+            HP: {row['HP']}
+            Weakness: {row['Weakness']}
+            EXP: {row['EXP']}
+            TP: {row['TP']}
+            EP: {row['EP']}
+            SP: {row['SP']}
+            Rare: {row['Rare']}
+            Item: {row['Item']}
+            Type: {row['Type']}
+            Cash: {row['Cash']}""", 'type': 'markdown'},
+            'Item': {'value': f"""
+            Name: {row['Name']}
+            HP: {row['HP']}
+            Weakness: {row['Weakness']}
+            EXP: {row['EXP']}
+            TP: {row['TP']}
+            EP: {row['EP']}
+            SP: {row['SP']}
+            Rare: {row['Rare']}
+            Item: {row['Item']}
+            Type: {row['Type']}
+            Cash: {row['Cash']}""", 'type': 'markdown'},
+            'Type': {'value': f"""
+            Name: {row['Name']}
+            HP: {row['HP']}
+            Weakness: {row['Weakness']}
+            EXP: {row['EXP']}
+            TP: {row['TP']}
+            EP: {row['EP']}
+            SP: {row['SP']}
+            Rare: {row['Rare']}
+            Item: {row['Item']}
+            Type: {row['Type']}
+            Cash: {row['Cash']}""", 'type': 'markdown'},
+            'Cash': {'value': f"""
+            Name: {row['Name']}
+            HP: {row['HP']}
+            Weakness: {row['Weakness']}
+            EXP: {row['EXP']}
+            TP: {row['TP']}
+            EP: {row['EP']}
+            SP: {row['SP']}
+            Rare: {row['Rare']}
+            Item: {row['Item']}
+            Type: {row['Type']}
+            Cash: {row['Cash']}""", 'type': 'markdown'}
+        } for row in ep1_df.to_dict('records')
+    ],
+    tooltip_delay=0,
+    tooltip_duration=None,
+    id='datatable-interactivity',
+    filter_action="native",
+    filter_options={
+        'case': 'insensitive',
+        'placeholder_text': 'Type a string to search...'
+    },
+    sort_action="native",
+)
+# Create the Dash DataTable for episode 3
+ep3_table = dash_table.DataTable(
+    columns=[
+        {"name": i, "id": i} for i in ep3_df.columns
+    ],
+    data=ep3_df.to_dict("records"),
+    tooltip_delay=0,
+    tooltip_duration=None,
+    id='datatable-interactivity',
+    filter_action="native",
+    filter_options={
+        'case': 'insensitive',
+        'placeholder_text': 'Type a string to search...'
+    },
+    sort_action="native",
+)
+
+# Create the tab content
+tab_1 = html.Div(children=[ep1_table])
+tab_3 = html.Div(children=[ep3_table])
+
+# Create the home page layout
 app.layout = dbc.Container([
   dbc.Row( # First row: title card
     [
       dbc.Col([title_card]),
     ]
   ),
-  dbc.Row(
-    [
+  dbc.Row( # Second row: tabs/tables
     html.Div(
-    [
-        html.Div(
-            dcc.Link(
-                f"{page['name']} - {page['path']}", href=page["relative_path"]
-            )
+      [
+        dbc.Col(
+          [
+            tabs,
+            html.Div(id="tab-content")
+          ]
         )
-        for page in dash.page_registry.values()
-    ]
+      ]
     ),
-      # Use column width properties to dynamically resize the cards based on screen size
-      # https://community.plotly.com/t/layout-changes-with-screen-size-and-resolution/27530/6
-      dbc.Col([dash.page_container], lg = 3, md = 6, sm = 4),
-    ]
   ),
 ],
-fluid = True,
 className = "dbc"
 )
+
+# Create the callback to update the tab content
+@app.callback(
+  Output("tab-content", "children"),
+  [Input("tabs", "value")]
+)
+def render_content(tab):
+    if tab == "ep1":
+        return tab_1
+    elif tab == "ep3":
+        return tab_3
 
 # Run the app
 app.run_server(debug=True)
