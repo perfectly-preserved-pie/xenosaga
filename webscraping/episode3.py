@@ -94,3 +94,5 @@ df = pd.DataFrame(
     }
 )
 
+# Replace missing values with "N/A"
+df.replace('', 'N/A', inplace=True)
