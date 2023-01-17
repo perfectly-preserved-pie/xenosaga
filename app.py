@@ -15,6 +15,9 @@ app = Dash(
   __name__, 
   external_stylesheets=external_stylesheets,
   use_pages=False,
+  # Because we're displaying tab content dynamically, we need to suppress callback exceptions
+  # https://dash.plotly.com/callback-gotchas#callbacks-require-all-inputs-and-states-to-be-rendered-on-the-page
+  suppress_callback_exceptions=True, 
   # Add meta tags for mobile devices
   # https://community.plotly.com/t/reorder-website-for-mobile-view/33669/5?
   meta_tags = [
