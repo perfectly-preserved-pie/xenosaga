@@ -94,6 +94,21 @@ ep1_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie
 #ep2_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode2.json')
 ep3_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode3.json')
 
+# Create a style for highlighting the selected cell's row
+# https://community.plotly.com/t/dash-datatable-press-on-cell-should-highlight-row/44076/2?u=the.oldest.house
+style_data_conditional = [
+    {
+        "if": {"state": "active"},
+        "backgroundColor": "rgba(150, 180, 225, 0.2)",
+        "border": "1px solid blue",
+    },
+    {
+        "if": {"state": "selected"},
+        "backgroundColor": "rgba(0, 116, 217, .03)",
+        "border": "1px solid blue",
+    },
+]
+
 # Create the Dash DataTable for episode 1
 ep1_table = dash_table.DataTable(
     columns=[
@@ -107,6 +122,7 @@ ep1_table = dash_table.DataTable(
         'placeholder_text': 'Type a string to search...'
     },
     sort_action="native",
+    style_data_conditional=style_data_conditional
 )
 
 # Create the Dash DataTable for episode 3
@@ -124,6 +140,7 @@ ep3_table = dash_table.DataTable(
         'placeholder_text': 'Type a string to search...'
     },
     sort_action="native",
+    style_data_conditional=style_data_conditional
 )
 
 # Create the tab content
@@ -163,6 +180,23 @@ def render_content(tab):
         return tab_1
     elif tab == "ep3":
         return tab_3
+
+# Create a callback to highlight the selected row
+@app.callback(    
+      Output("datatable-interactivity", "style_data_conditional"),
+      Input("datatable-interactivity", "active_cell"),    
+)
+def highlight_row(active_cell):
+    style = style_data_conditional.copy()
+    if active_cell:
+      style.append(
+        {
+          "if": {"row_index": active_cell["row"]},
+          "backgroundColor": "rgba(150, 180, 225, 0.2)",
+          "border": "1px solid blue",
+        },
+      )
+    return style
 
 # Run the app
 app.run_server(debug=True)
