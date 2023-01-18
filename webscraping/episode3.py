@@ -132,4 +132,4 @@ df['Name'] = df['Name'].replace({'(FINAL BOSS)Zarathustra': 'Zarathustra'})
 df['Name'] = df['Name'].str.replace('\(Boss\)','', regex=True)
 
 # Export dataframe to JSON
-df.to_json('episode3.json', orient='records')
+df.to_json('webscraping/episode3.json', orient='records')
