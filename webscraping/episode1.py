@@ -47,8 +47,8 @@ df = pd.DataFrame(
         'EP': ep,
         'SP': sp,
         'Cash': cash,
-        'Rare': rare,
-        'Item': item,
+        'Normal Drop': item,
+        'Rare Drop': rare,
         'Type': type,
         'Weakness': weaknesses,
         
