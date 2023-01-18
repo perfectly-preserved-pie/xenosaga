@@ -128,5 +128,8 @@ df[cols] = df[cols].apply(lambda x: x.str.replace(',', ', '))
 # Remove the (FINAL BOSS) part of the name of the final boss
 df['Name'] = df['Name'].replace({'(FINAL BOSS)Zarathustra': 'Zarathustra'})
 
+# Remove the (Boss) string in the name of the boss enemies
+df['Name'] = df['Name'].str.replace('\(Boss\)','', regex=True)
+
 # Export dataframe to JSON
 df.to_json('episode3.json', orient='records')
