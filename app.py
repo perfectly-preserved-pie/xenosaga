@@ -20,6 +20,15 @@ global df
 app = Dash(
   __name__, 
   external_stylesheets=external_stylesheets,
+  external_scripts=[
+    # Plausible analytics
+    {
+      'src': "https://plausible.automateordie.io/js/plausible.js",
+      'data-domain': "enemies.xenosaga.games",
+      'defer': True,
+      'type': 'application/javascript'
+    },
+  ],
   use_pages=False,
   # Because we're displaying tab content dynamically, we need to suppress callback exceptions
   # https://dash.plotly.com/callback-gotchas#callbacks-require-all-inputs-and-states-to-be-rendered-on-the-page
@@ -37,29 +46,6 @@ app.description = "A searchable and sortable table of all enemies in the Xenosag
 
 # For Gunicorn
 server = app.server
-
-# Plausible privacy-friendly analytics
-# https://dash.plotly.com/external-resources#usage (Option 1)
-# Probably won't get past adblockers and NoScript but whatever, good enough
-app.index_string = """<!DOCTYPE html>
-<html>
-  <head>
-    <script defer data-domain="enemies.xenosaga.games" src="https://plausible.automateordie.io/js/plausible.js" type="application/javascript"></script>
-    {%metas%}
-    <title>{%title%}</title>
-    {%favicon%}
-    {%css%}
-  </head>
-  <body>
-    {%app_entry%}
-    <footer>
-      {%config%}
-      {%scripts%}
-      {%renderer%}
-    </footer>
-  </body>
-</html>
-"""
 
 title_card = dbc.Card(
   [
