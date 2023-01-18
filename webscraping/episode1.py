@@ -59,12 +59,12 @@ df = pd.DataFrame(
 df['Name'] = df['Name'].replace('&amp;', '&', regex=True)
 
 # Insert thousands separators into the numbers
-df['HP'] = df['HP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
-df['EXP'] = df['EXP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
-df['TP'] = df['TP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
-df['EP'] = df['EP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
-df['SP'] = df['SP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
-df['Cash'] = df['Cash'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
+df['HP'] = df['HP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
+df['EXP'] = df['EXP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
+df['TP'] = df['TP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
+df['EP'] = df['EP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
+df['SP'] = df['SP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
+df['Cash'] = df['Cash'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
 
 # Replace the string None with N/A
 df = df.replace('None', 'N/A')
