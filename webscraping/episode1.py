@@ -69,5 +69,11 @@ df['Cash'] = df['Cash'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=Tr
 # Replace the string None with N/A
 df = df.replace('None', 'N/A')
 
+# Remove all text after '200' in Minitia's SP column
+df['SP'] = df['SP'].str.replace(r'200.*', '200', regex=True)
+
+# At this point I had to export the dataframe as a CSV, edit it in Excel to split some of the bosses and their minions into separate rows, and then import it back into Python
+# Kind of a pain in the ass
+
 # Export to JSON
 df.to_json('episode1.json')
