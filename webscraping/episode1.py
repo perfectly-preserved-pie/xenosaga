@@ -69,6 +69,12 @@ df['Cash'] = df['Cash'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=Tr
 # Replace the string None with N/A
 df = df.replace('None', 'N/A')
 
+# Replace empty strings with N/A
+df = df.replace('', 'N/A')
+
+# Replace NaN with N/A
+df = df.replace(float('nan'), 'N/A')
+
 # Remove all text after '200' in Minitia's SP column
 df['SP'] = df['SP'].str.replace(r'200.*', '200', regex=True)
 
