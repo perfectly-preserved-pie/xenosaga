@@ -42,20 +42,32 @@ df = pd.DataFrame(
     {
         'Name': names,
         'HP': hp,   
-        'Weakness': weaknesses,
         'EXP': exp,
         'TP': tp,
         'EP': ep,
         'SP': sp,
+        'Cash': cash,
         'Rare': rare,
         'Item': item,
         'Type': type,
-        'Cash': cash
+        'Weakness': weaknesses,
+        
     }
 )
 
 # Replace weird Unicode formatting with the actual ampersand
 df['Name'] = df['Name'].replace('&amp;', '&', regex=True)
+
+# Insert thousands separators into the numbers
+df['HP'] = df['HP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
+df['EXP'] = df['EXP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
+df['TP'] = df['TP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
+df['EP'] = df['EP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
+df['SP'] = df['SP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
+df['Cash'] = df['Cash'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,')
+
+# Replace the string None with N/A
+df = df.replace('None', 'N/A')
 
 # Export to JSON
 df.to_json('episode1.json')

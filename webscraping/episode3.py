@@ -97,5 +97,36 @@ df = pd.DataFrame(
 # Replace missing values with "N/A"
 df.replace('', 'N/A', inplace=True)
 
+# Replace enemy type abbreviations with full names
+df['Type'] = df['Type'].replace({
+    'B': 'Biological',
+    'G': 'Gnosis',
+    'M': 'Mechanical'
+})
+
+# Replace element abbreviations with full names
+# Use .filter() to select columns containing 'Element'
+cols = df.filter(like='Element').columns
+# Create functions to replace the abbreviations with full names
+def replace_I(x):
+    return str(x).replace('I', 'Ice')
+def replace_F(x):
+    return str(x).replace('F', 'Fire')
+def replace_B(x):
+    return str(x).replace('B', 'Beam')
+def replace_L(x):
+    return str(x).replace('L', 'Lightning')
+# Apply the functions to the columns
+df[cols] = df[cols].applymap(replace_I)
+df[cols] = df[cols].applymap(replace_F)
+df[cols] = df[cols].applymap(replace_B)
+df[cols] = df[cols].applymap(replace_L)
+
+# Add a space after commas in the selected columns
+df[cols] = df[cols].apply(lambda x: x.str.replace(',', ', '))
+
+# Remove the (FINAL BOSS) part of the name of the final boss
+df['Name'] = df['Name'].replace({'(FINAL BOSS)Zarathustra': 'Zarathustra'})
+
 # Export dataframe to JSON
 df.to_json('episode3.json', orient='records')
