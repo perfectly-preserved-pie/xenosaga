@@ -6,7 +6,13 @@ import pandas as pd
 
 logging.getLogger().setLevel(logging.INFO)
 
-external_stylesheets = [dbc.icons.BOOTSTRAP, dbc.icons.FONT_AWESOME]
+external_stylesheets = [
+  dbc.icons.BOOTSTRAP,
+  dbc.icons.FONT_AWESOME,
+  dbc.themes.DARKLY,
+  "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates@V1.0.2/dbc.min.css", # https://github.com/AnnMarieW/dash-bootstrap-templates#dbccss--stylesheet
+
+]
 
 # Make the dataframe a global variable
 global df
@@ -170,7 +176,8 @@ app.layout = dbc.Container([
     ),
   ),
 ],
-className = "dbc"
+fluid=True,
+className = "dbc dbc-row-selectable"
 )
 
 # Create the callback to update the tab content
@@ -202,4 +209,4 @@ def highlight_row(active_cell):
     return style
 
 # Run the app
-app.run_server(debug=True)
+#app.run_server(debug=True)
