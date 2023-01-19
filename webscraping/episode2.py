@@ -3,26 +3,28 @@ import requests
 import re
 import pandas as pd
 
-# Pretend like we're human
-# https://stackoverflow.com/a/43441551
-headers = requests.utils.default_headers()
-headers.update({
-    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
-})
+df = pd.read_csv('xenosaga episode 2.csv')
 
-url = "https://www.ign.com/articles/2005/04/06/xenosaga-episode-ii-jenseits-von-gut-und-bose-enemy-faq-545281"
+# Convert the strings in the Name column to lowercase except for the first letter
+df['Name'] = df['Name'].str.title()
 
-response = requests.get(url, headers=headers)
-soup = bs4(response.content, "html.parser")
+# Strip whitespace from the beginning and end of the strings in all columns
+df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 
+# Insert thousands separators into the numbers
+df['HP'] = df['HP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
+df['EXP'] = df['EXP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
+df['CPTS'] = df['CPTS'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
+df['SP'] = df['SP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
 
-# Find the div/class with the text we want
-text = soup.find('section', {'class': 'article-page'})
+# Replace the string None with N/A
+df = df.replace('None', 'N/A')
 
-# For names, match all instances of text after 2-3 digits followed by a whitespace, |, and another whitespace but before <br/>
-names_dirty = re.findall("\d{2,3}\s\|\s(.*?)<br/>", str(text))
-# We need to remove all the elements after the last enemy
-index_cutoff = names_dirty.index("Mikumari") + 1
-# Slice the list to remove the extra elements
-names = names_dirty[:index_cutoff]
-# Now we should have 109 elements in the names list, which matches up with 75 enemies + 34 bosses = 109 enemies total. Nice!
+# Replace empty strings with N/A
+df = df.replace('', 'N/A')
+
+# Replace NaN with N/A
+df = df.replace(float('nan'), 'N/A')
+
+# Export dataframe to JSON
+df.to_json('webscraping/episode3.json', orient='records')
