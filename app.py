@@ -86,7 +86,7 @@ tabs = dcc.Tabs(
 # Create the tables
 # import the dataframe json file
 ep1_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode1.json')
-#ep2_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode2.json')
+ep2_df = pd.read_json('json/episode2.json')
 ep3_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode3.json')
 
 # Create a style for highlighting the selected cell's row
@@ -104,6 +104,17 @@ style_data_conditional = [
     },
 ]
 
+# Add commas to the numbers
+insert_thousands_separator = [
+  {
+    "if": {"column_id": c},
+    "textAlign": "left",
+    "format": {
+        "specifier": ","
+    }
+  } for c in ep1_df.columns
+]
+
 # Create the Dash DataTable for episode 1
 ep1_table = dash_table.DataTable(
     columns=[
@@ -118,6 +129,24 @@ ep1_table = dash_table.DataTable(
     },
     sort_action="native",
     style_data_conditional=style_data_conditional
+)
+
+# Create the Dash DataTable for episode 2
+ep2_table = dash_table.DataTable(
+    columns=[
+        {"name": i, "id": i} for i in ep2_df.columns
+    ],
+    data=ep2_df.to_dict("records"),
+    tooltip_delay=0,
+    tooltip_duration=None,
+    id='datatable-interactivity',
+    filter_action="native",
+    filter_options={
+        'case': 'insensitive',
+        'placeholder_text': 'Type a string to search...'
+    },
+    sort_action="native",
+    style_data_conditional=style_data_conditional + insert_thousands_separator
 )
 
 # Create the Dash DataTable for episode 3
@@ -140,6 +169,7 @@ ep3_table = dash_table.DataTable(
 
 # Create the tab content
 tab_1 = html.Div(children=[ep1_table])
+tab_2 = html.Div(children=[ep2_table])
 tab_3 = html.Div(children=[ep3_table])
 
 # Create the home page layout
