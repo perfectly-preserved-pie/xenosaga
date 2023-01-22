@@ -1,4 +1,5 @@
 from dash import Dash, html, dcc, dash_table
+from dash_table.Format import Format
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import logging
@@ -86,7 +87,7 @@ tabs = dcc.Tabs(
 # Create the tables
 # import the dataframe json file
 ep1_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode1.json')
-ep2_df = pd.read_json('json/episode2.json')
+ep2_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode2.json')
 ep3_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode3.json')
 
 # Create a style for highlighting the selected cell's row
@@ -102,17 +103,6 @@ style_data_conditional = [
         "backgroundColor": "rgba(0, 116, 217, .03)",
         "border": "1px solid blue",
     },
-]
-
-# Add commas to the numbers
-insert_thousands_separator = [
-  {
-    "if": {"column_id": c},
-    "textAlign": "left",
-    "format": {
-        "specifier": ","
-    }
-  } for c in ep1_df.columns
 ]
 
 # Create the Dash DataTable for episode 1
@@ -132,9 +122,20 @@ ep1_table = dash_table.DataTable(
 )
 
 # Create the Dash DataTable for episode 2
-ep2_table = dash_table.DataTable(
+# Create a list of columns that should be formatted with commas
+list_of_cols = [
+  "HP",
+  "EXP",
+  "CPTS",
+  "SPTS",
+]
+
+ep2_table = dash_table.DataTable( 
+    # Add commas to the numbers for the columns in the above list
+    # https://community.plotly.com/t/dash-datatable-thousands-separator/6713/10
     columns=[
-        {"name": i, "id": i} for i in ep2_df.columns
+      {"name": i, "id": i, 'type': 'numeric', "format": Format(group=',')} if i in list_of_cols 
+      else {"name": i, "id": i} for i in ep2_df.columns
     ],
     data=ep2_df.to_dict("records"),
     tooltip_delay=0,
@@ -146,7 +147,7 @@ ep2_table = dash_table.DataTable(
         'placeholder_text': 'Type a string to search...'
     },
     sort_action="native",
-    style_data_conditional=style_data_conditional + insert_thousands_separator
+    style_data_conditional=style_data_conditional
 )
 
 # Create the Dash DataTable for episode 3
@@ -204,6 +205,8 @@ className = "dbc dbc-row-selectable"
 def render_content(tab):
     if tab == "ep1":
         return tab_1
+    elif tab == "ep2":
+        return tab_2
     elif tab == "ep3":
         return tab_3
 
