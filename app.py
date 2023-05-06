@@ -1,5 +1,6 @@
 from dash import Dash, html, dcc, dash_table
 from dash.dependencies import Input, Output
+import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import logging
 import pandas as pd
@@ -104,43 +105,39 @@ style_data_conditional = [
     },
 ]
 
-# Create the Dash DataTable for episode 1
-ep1_table = dash_table.DataTable(
-    columns=[
-        {"name": i, "id": i} for i in ep1_df.columns
-    ],
-    data=ep1_df.to_dict("records"),
-    id='datatable-interactivity',
-    filter_action="native",
-    filter_options={
-        'case': 'insensitive',
-        'placeholder_text': 'Type a string to search...'
-    },
-    sort_action="native",
-    style_data_conditional=style_data_conditional
+# Create the Dash AgGrid for episode 1
+ep1_grid = dag.AgGrid(
+  id = "ep1_grid",
+  rowData = ep1_df.to_dict("records"),
+  #columnDefs = [{"field": i} for i in ep1_df.columns],
+  defaultColDef = {
+    "resizable": True,
+    "sortable": True,
+    "filter": True,
+  },
+  columnDefs = [{"field": i, "type": "numericColumn"} if ep1_df[i].dtype in ['int64', 'float64', 'Int64'] else {"field": i} for i in ep1_df.columns],
+  columnSize = "autoSize",
+  className = "ag-theme-alpine-dark",
 )
 
-# Create the Dash DataTable for episode 3
-ep3_table = dash_table.DataTable(
-    columns=[
-        {"name": i, "id": i} for i in ep3_df.columns
-    ],
-    data=ep3_df.to_dict("records"),
-    tooltip_delay=0,
-    tooltip_duration=None,
-    id='datatable-interactivity',
-    filter_action="native",
-    filter_options={
-        'case': 'insensitive',
-        'placeholder_text': 'Type a string to search...'
-    },
-    sort_action="native",
-    style_data_conditional=style_data_conditional
+# Create the Dash AgGrid for episode 3
+ep3_grid = dag.AgGrid(
+  id = "ep3_grid",
+  rowData = ep3_df.to_dict("records"),
+  #columnDefs = [{"field": i} for i in ep3_df.columns],
+  defaultColDef = {
+    "resizable": True,
+    "sortable": True,
+    "filter": True,
+  },
+  columnDefs = [{"field": i, "type": "numericColumn"} if ep1_df[i].dtype in ['int64', 'float64', 'Int64'] else {"field": i} for i in ep1_df.columns],
+  columnSize = "autoSize",
+  className = "ag-theme-alpine-dark",
 )
 
 # Create the tab content
-tab_1 = html.Div(children=[ep1_table])
-tab_3 = html.Div(children=[ep3_table])
+tab_1 = html.Div(children=[ep1_grid])
+tab_3 = html.Div(children=[ep3_grid])
 
 # Create the home page layout
 app.layout = dbc.Container([

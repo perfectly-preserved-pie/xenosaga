@@ -1,5 +1,6 @@
 beautifulsoup4==4.11.1
-dash==2.7.0
 dash_bootstrap_components==1.2.1
+dash-ag-grid==2.0.0
+dash==2.7.0
 pandas==1.5.1
 requests==2.25.1
