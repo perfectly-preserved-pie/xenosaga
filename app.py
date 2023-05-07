@@ -86,9 +86,9 @@ tabs = dcc.Tabs(
 
 # Create the tables
 # import the dataframe json file
-ep1_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode1.json')
-#ep2_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode2.json')
-ep3_df = pd.read_json('https://raw.githubusercontent.com/perfectly-preserved-pie/xenosaga/master/json/episode3.json')
+ep1_df = pd.read_json('json/episode1.json')
+#ep2_df = pd.read_json('json/episode2.json')
+ep3_df = pd.read_json('json/episode3.json')
 
 # Create a style for highlighting the selected cell's row
 # https://community.plotly.com/t/dash-datatable-press-on-cell-should-highlight-row/44076/2?u=the.oldest.house
@@ -105,6 +105,8 @@ style_data_conditional = [
     },
 ]
 
+ep1_numeric_cols = ['HP', 'EXP', 'TP', 'EP', 'SP', 'Cash']
+
 # Create the Dash AgGrid for episode 1
 ep1_grid = dag.AgGrid(
   id = "ep1_grid",
@@ -116,7 +118,7 @@ ep1_grid = dag.AgGrid(
     "filter": True,
     "sort": 'asc'
   },
-  columnDefs = [{"field": i, "type": "numericColumn"} if ep1_df[i].dtype in ['int64', 'float64', 'Int64'] else {"field": i, "sortable": True, "sort": "asc"} if i == "Name" else {"field": i, "sortable": True} for i in ep1_df.columns],
+  columnDefs = [{"field": i, "type": "numericColumn"} if i in ep1_numeric_cols else {"field": i} for i in ep1_df.columns],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
