@@ -114,8 +114,9 @@ ep1_grid = dag.AgGrid(
     "resizable": True,
     "sortable": True,
     "filter": True,
+    "sort": 'asc'
   },
-  columnDefs = [{"field": i, "type": "numericColumn"} if ep1_df[i].dtype in ['int64', 'float64', 'Int64'] else {"field": i} for i in ep1_df.columns],
+  columnDefs = [{"field": i, "type": "numericColumn"} if ep1_df[i].dtype in ['int64', 'float64', 'Int64'] else {"field": i, "sortable": True, "sort": "asc"} if i == "Name" else {"field": i, "sortable": True} for i in ep1_df.columns],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
@@ -129,8 +130,9 @@ ep3_grid = dag.AgGrid(
     "resizable": True,
     "sortable": True,
     "filter": True,
+    "sort": 'asc'
   },
-  columnDefs = [{"field": i, "type": "numericColumn"} if ep3_df[i].dtype in ['int64', 'float64', 'Int64'] else {"field": i} for i in ep3_df.columns],
+  columnDefs = [{"field": i, "type": "numericColumn"} if ep3_df[i].dtype in ['int64', 'float64', 'Int64'] else {"field": i, "sortable": True, "sort": "asc"} if i == "Name" else {"field": i, "sortable": True} for i in ep3_df.columns],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
