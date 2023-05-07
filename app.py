@@ -106,6 +106,7 @@ style_data_conditional = [
 ]
 
 ep1_numeric_cols = ['HP', 'EXP', 'TP', 'EP', 'SP', 'Cash']
+ep3_numeric_cols = ['HP', 'EXP', 'EP', 'SP', 'Gold', 'Break Limit']
 
 # Create the Dash AgGrid for episode 1
 ep1_grid = dag.AgGrid(
@@ -118,7 +119,7 @@ ep1_grid = dag.AgGrid(
     "filter": True,
     "sort": 'asc'
   },
-  columnDefs = [{"field": i, "type": "numericColumn"} if i in ep1_numeric_cols else {"field": i} for i in ep1_df.columns],
+  columnDefs = [{"field": i, "type": "numericColumn", "filter": "agNumberColumnFilter"} if i in ep1_numeric_cols else {"field": i} for i in ep1_df.columns],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
@@ -134,7 +135,7 @@ ep3_grid = dag.AgGrid(
     "filter": True,
     "sort": 'asc'
   },
-  columnDefs = [{"field": i, "type": "numericColumn"} if ep3_df[i].dtype in ['int64', 'float64', 'Int64'] else {"field": i, "sortable": True, "sort": "asc"} if i == "Name" else {"field": i, "sortable": True} for i in ep3_df.columns],
+  columnDefs = [{"field": i, "type": "numericColumn", "filter": "agNumberColumnFilter"} if i in ep3_numeric_cols else {"field": i} for i in ep3_df.columns],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
