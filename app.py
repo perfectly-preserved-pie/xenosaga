@@ -130,7 +130,7 @@ ep3_grid = dag.AgGrid(
     "sortable": True,
     "filter": True,
   },
-  columnDefs = [{"field": i, "type": "numericColumn"} if ep1_df[i].dtype in ['int64', 'float64', 'Int64'] else {"field": i} for i in ep1_df.columns],
+  columnDefs = [{"field": i, "type": "numericColumn"} if ep3_df[i].dtype in ['int64', 'float64', 'Int64'] else {"field": i} for i in ep3_df.columns],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
