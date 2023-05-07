@@ -73,8 +73,5 @@ df['SP'] = df['SP'].str.replace(r'200.*', '200', regex=True)
 # At this point I had to export the dataframe as a CSV, edit it in Excel to split some of the bosses and their minions into separate rows, and then import it back into Python
 # Kind of a pain in the ass
 
-# Convert all columns to Int64
-df[['HP', 'EXP', 'TP', 'EP', 'SP', 'Cash']] = df[['HP', 'EXP', 'TP', 'EP', 'SP', 'Cash']].astype('Int64', errors='ignore') 
-
 # Export to JSON
 df.to_json('json/episode1.json')
