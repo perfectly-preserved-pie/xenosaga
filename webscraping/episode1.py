@@ -58,14 +58,6 @@ df = pd.DataFrame(
 # Replace weird Unicode formatting with the actual ampersand
 df['Name'] = df['Name'].replace('&amp;', '&', regex=True)
 
-# Insert thousands separators into the numbers
-df['HP'] = df['HP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['EXP'] = df['EXP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['TP'] = df['TP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['EP'] = df['EP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['SP'] = df['SP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['Cash'] = df['Cash'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-
 # Replace the string None with N/A
 df = df.replace('None', 'N/A')
 
@@ -82,4 +74,4 @@ df['SP'] = df['SP'].str.replace(r'200.*', '200', regex=True)
 # Kind of a pain in the ass
 
 # Export to JSON
-df.to_json('episode1.json')
+df.to_json('json/episode1.json')
