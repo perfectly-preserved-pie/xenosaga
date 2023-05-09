@@ -119,7 +119,14 @@ ep1_grid = dag.AgGrid(
     "filter": True,
     "sort": 'asc'
   },
-  columnDefs = [{"field": i, "type": "numericColumn", "filter": "agNumberColumnFilter"} if i in ep1_numeric_cols else {"field": i} for i in ep1_df.columns],
+  columnDefs = [
+    {
+      "field": i,
+      "type": "numericColumn",
+      "filter": "agNumberColumnFilter",
+      # Insert commas in the numeric columns
+      "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
+    } if i in ep1_numeric_cols else {"field": i} for i in ep1_df.columns],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
@@ -135,7 +142,14 @@ ep3_grid = dag.AgGrid(
     "filter": True,
     "sort": 'asc'
   },
-  columnDefs = [{"field": i, "type": "numericColumn", "filter": "agNumberColumnFilter"} if i in ep3_numeric_cols else {"field": i} for i in ep3_df.columns],
+  columnDefs = [
+    {
+      "field": i,
+      "type": "numericColumn",
+      "filter": "agNumberColumnFilter",
+      # Insert commas in the numeric columns
+      "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
+    } if i in ep1_numeric_cols else {"field": i} for i in ep1_df.columns],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
