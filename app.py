@@ -106,7 +106,14 @@ style_data_conditional = [
 ]
 
 ep1_numeric_cols = ['HP', 'EXP', 'TP', 'EP', 'SP', 'Cash']
-ep1_cols_with_ranges = ['Cash', 'HP', 'EXP', 'TP', 'SP']
+# Create a value getter for the numeric columns
+# In case the value is a range, use the first number
+def get_value_getter(column_name):
+  if column_name in ['Cash', 'HP', 'EXP', 'TP', 'SP']:
+    return {"function": f"Number(params.data.{column_name}.split('-')[0])"}
+  else:
+    return None
+
 # Create the Dash AgGrid for episode 1
 ep1_grid = dag.AgGrid(
   id = "ep1_grid",
@@ -125,8 +132,7 @@ ep1_grid = dag.AgGrid(
       "filter": "agNumberColumnFilter",
       # Insert commas in the numeric columns
       "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
-      # In case the value is a range, use the first number
-      "valueGetter": {"function": "Number(params.data.Cash.split('-')[0])"} if i in ep1_cols_with_ranges else None,
+      "valueGetter": get_value_getter(i),
     } if i in ep1_numeric_cols else {
       "field": i,
       "type": "textColumn",
