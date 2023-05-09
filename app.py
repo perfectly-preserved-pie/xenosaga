@@ -127,7 +127,16 @@ ep1_grid = dag.AgGrid(
       "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
       # In case the value is a range, use the first number
       "valueGetter": {"function": "Number(params.data.Cash.split('-')[0])"} if i in ep1_cols_with_ranges else None,
-    } if i in ep1_numeric_cols else {"field": i} for i in ep1_df.columns],
+    } if i in ep1_numeric_cols else {
+      "field": i,
+      "type": "textColumn",
+      "filter": "agTextColumnFilter",
+      "floatingFilter": True, 
+      "filterParams": {
+        "filterPlaceholder": "Search...",
+      },
+    } for i in ep1_df.columns
+  ],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
@@ -151,7 +160,16 @@ ep3_grid = dag.AgGrid(
       "filter": "agNumberColumnFilter",
       # Insert commas in the numeric columns
       "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
-    } if i in ep3_numeric_cols else {"field": i} for i in ep3_df.columns],
+    } if i in ep3_numeric_cols else {
+      "field": i,
+      "type": "textColumn",
+      "filter": "agTextColumnFilter",
+      "floatingFilter": True, 
+      "filterParams": {
+        "filterPlaceholder": "Search...",
+      },
+    } for i in ep3_df.columns
+  ],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
