@@ -106,8 +106,7 @@ style_data_conditional = [
 ]
 
 ep1_numeric_cols = ['HP', 'EXP', 'TP', 'EP', 'SP', 'Cash']
-ep3_numeric_cols = ['HP', 'EXP', 'EP', 'SP', 'Gold', 'Break Limit']
-
+ep1_cols_with_ranges = ['Cash', 'HP', 'EXP', 'TP', 'SP']
 # Create the Dash AgGrid for episode 1
 ep1_grid = dag.AgGrid(
   id = "ep1_grid",
@@ -126,11 +125,14 @@ ep1_grid = dag.AgGrid(
       "filter": "agNumberColumnFilter",
       # Insert commas in the numeric columns
       "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
+      # In case the value is a range, use the first number
+      "valueGetter": {"function": "Number(params.data.Cash.split('-')[0])"} if i in ep1_cols_with_ranges else None,
     } if i in ep1_numeric_cols else {"field": i} for i in ep1_df.columns],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
 
+ep3_numeric_cols = ['HP', 'EXP', 'EP', 'SP', 'Gold', 'Break Limit']
 # Create the Dash AgGrid for episode 3
 ep3_grid = dag.AgGrid(
   id = "ep3_grid",
@@ -149,7 +151,7 @@ ep3_grid = dag.AgGrid(
       "filter": "agNumberColumnFilter",
       # Insert commas in the numeric columns
       "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
-    } if i in ep1_numeric_cols else {"field": i} for i in ep1_df.columns],
+    } if i in ep3_numeric_cols else {"field": i} for i in ep3_df.columns],
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )

@@ -73,5 +73,13 @@ df['SP'] = df['SP'].str.replace(r'200.*', '200', regex=True)
 # At this point I had to export the dataframe as a CSV, edit it in Excel to split some of the bosses and their minions into separate rows, and then import it back into Python
 # Kind of a pain in the ass
 
+# Loop through the dataframe's columns and try to cast as nullable integers
+cols = ['HP', 'EXP', 'EP', 'SP', 'Cash', 'TP']
+for col in cols:
+    try:
+        df[col] = df[col].astype('Int64')
+    except ValueError:
+        print(f"Column '{col}' could not be cast as nullable integer.")
+
 # Export to JSON
 df.to_json('json/episode1.json')
