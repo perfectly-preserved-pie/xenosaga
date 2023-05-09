@@ -131,7 +131,8 @@ ep1_grid = dag.AgGrid(
       "field": i,
       "type": "textColumn",
       "filter": "agTextColumnFilter",
-      "floatingFilter": True, 
+      "floatingFilter": True,
+      "suppressMenu": True,
       "filterParams": {
         "filterPlaceholder": "Search...",
       },
@@ -164,7 +165,8 @@ ep3_grid = dag.AgGrid(
       "field": i,
       "type": "textColumn",
       "filter": "agTextColumnFilter",
-      "floatingFilter": True, 
+      "floatingFilter": True,
+      "suppressMenu": True,
       "filterParams": {
         "filterPlaceholder": "Search...",
       },
