@@ -87,7 +87,7 @@ tabs = dcc.Tabs(
 # Create the tables
 # import the dataframe json file
 ep1_df = pd.read_json('json/episode1.json')
-#ep2_df = pd.read_json('json/episode2.json')
+ep2_df = pd.read_json('json/episode2.json')
 ep3_df = pd.read_json('json/episode3.json')
 
 # Create a style for highlighting the selected cell's row
@@ -148,6 +148,40 @@ ep1_grid = dag.AgGrid(
   className = "ag-theme-alpine-dark",
 )
 
+ep2_numeric_cols = ['HP', 'EXP', 'CPTS', 'SPTS', 'STR', 'VIT', 'POWER', 'ARMOR', 'EATK', 'EDEF', 'DEX', 'EVA']
+# Create the Dash AgGrid for episode 2
+ep2_grid = dag.AgGrid(
+  id = "ep2_grid",
+  rowData = ep2_df.to_dict("records"),
+  #columnDefs = [{"field": i} for i in ep2_df.columns],
+  defaultColDef = {
+    "resizable": True,
+    "sortable": True,
+    "filter": True,
+    "sort": 'asc'
+  },
+  columnDefs = [
+    {
+      "field": i,
+      "type": "numericColumn",
+      "filter": "agNumberColumnFilter",
+      # Insert commas in the numeric columns
+      "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
+    } if i in ep2_numeric_cols else {
+      "field": i,
+      "type": "textColumn",
+      "filter": "agTextColumnFilter",
+      "floatingFilter": True,
+      "suppressMenu": True,
+      "filterParams": {
+        "filterPlaceholder": "Search...",
+      },
+    } for i in ep2_df.columns
+  ],
+  columnSize = "autoSize",
+  className = "ag-theme-alpine-dark",
+)
+
 ep3_numeric_cols = ['HP', 'EXP', 'EP', 'SP', 'Gold', 'Break Limit']
 # Create the Dash AgGrid for episode 3
 ep3_grid = dag.AgGrid(
@@ -184,6 +218,7 @@ ep3_grid = dag.AgGrid(
 
 # Create the tab content
 tab_1 = html.Div(children=[ep1_grid])
+tab_2 = html.Div(children=[ep2_grid])
 tab_3 = html.Div(children=[ep3_grid])
 
 # Create the home page layout
@@ -216,10 +251,12 @@ className = "dbc dbc-row-selectable"
   [Input("tabs", "value")]
 )
 def render_content(tab):
-    if tab == "ep1":
-        return tab_1
-    elif tab == "ep3":
-        return tab_3
+  if tab == "ep1":
+    return tab_1
+  elif tab == "ep2":
+    return tab_2
+  elif tab == "ep3":
+    return tab_3
 
 # Create a callback to highlight the selected row
 @app.callback(    

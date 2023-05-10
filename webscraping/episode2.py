@@ -1,8 +1,6 @@
-from bs4 import BeautifulSoup as bs4
-import requests
-import re
 import pandas as pd
 
+# Import a custom CSV I made for Episode 2
 df = pd.read_csv('xenosaga episode 2.csv')
 
 # Convert the strings in the Name column to lowercase except for the first letter
@@ -11,11 +9,13 @@ df['Name'] = df['Name'].str.title()
 # Strip whitespace from the beginning and end of the strings in all columns
 df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 
-# Insert thousands separators into the numbers
-df['HP'] = df['HP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['EXP'] = df['EXP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['CPTS'] = df['CPTS'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['SP'] = df['SP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
+# Cast the numeric columns as nullable integers
+cols = ['HP', 'EXP', 'CPTS', 'SPTS', 'STR', 'VIT', 'POWER', 'ARMOR', 'EATK', 'EDEF', 'DEX', 'EVA']
+for col in cols:
+    try:
+        df[col] = df[col].astype('Int64')
+    except ValueError:
+        print(f"Column '{col}' could not be cast as nullable integer.")
 
 # Replace the string None with N/A
 df = df.replace('None', 'N/A')
@@ -23,8 +23,7 @@ df = df.replace('None', 'N/A')
 # Replace empty strings with N/A
 df = df.replace('', 'N/A')
 
-# Replace NaN with N/A
-df = df.replace(float('nan'), 'N/A')
+#df.fillna('N/A', inplace=True)
 
 # Export dataframe to JSON
-df.to_json('webscraping/episode3.json', orient='records')
+df.to_json('json/episode2.json', orient='records')
