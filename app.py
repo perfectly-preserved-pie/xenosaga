@@ -92,21 +92,6 @@ ep1_df = pd.read_json('json/episode1.json')
 ep2_df = pd.read_json('json/episode2.json')
 ep3_df = pd.read_json('json/episode3.json')
 
-# Create a style for highlighting the selected cell's row
-# https://community.plotly.com/t/dash-datatable-press-on-cell-should-highlight-row/44076/2?u=the.oldest.house
-style_data_conditional = [
-    {
-        "if": {"state": "active"},
-        "backgroundColor": "rgba(150, 180, 225, 0.2)",
-        "border": "1px solid blue",
-    },
-    {
-        "if": {"state": "selected"},
-        "backgroundColor": "rgba(0, 116, 217, .03)",
-        "border": "1px solid blue",
-    },
-]
-
 ep1_numeric_cols = ['HP', 'EXP', 'TP', 'EP', 'SP', 'Cash']
 # Create a value getter for the numeric columns
 # In case the value is a range, use the first number
@@ -259,23 +244,6 @@ def render_content(tab):
     return tab_2
   elif tab == "ep3":
     return tab_3
-
-# Create a callback to highlight the selected row
-@app.callback(    
-      Output("datatable-interactivity", "style_data_conditional"),
-      Input("datatable-interactivity", "active_cell"),    
-)
-def highlight_row(active_cell):
-    style = style_data_conditional.copy()
-    if active_cell:
-      style.append(
-        {
-          "if": {"row_index": active_cell["row"]},
-          "backgroundColor": "rgba(150, 180, 225, 0.2)",
-          "border": "1px solid blue",
-        },
-      )
-    return style
 
 # Run the app
 #app.run_server(debug=True)
