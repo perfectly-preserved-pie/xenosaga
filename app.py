@@ -52,7 +52,14 @@ title_card = dbc.Card(
   [
     html.H3("Xenosaga Enemy Database", className="card-title"),
     html.I("Mystic powers, grant me a miracle! ✨", style={"margin-bottom": "10px"}),
-    html.Br(),
+    html.P(
+      "This is a searchable and sortable table of all enemies in the Xenosaga series, separated by game.",
+      style = {"margin-bottom": "0px"}
+    ),
+    html.P(
+      "Click on the other tabs to see enemy list for the other games.",
+      style = {"margin-bottom": "0px"}
+    ),
     html.I( # use a GitHub icon for my repo
       className="bi bi-github",
       style = {
@@ -69,11 +76,6 @@ title_card = dbc.Card(
       },
     ),
     html.A("About This Project", href='https://automateordie.io/xenosaga/', target='_blank'),
-    html.P(
-      "This is a searchable and sortable table of all enemies in the Xenosaga series, separated by game.",
-      style = {"margin-bottom": "0px"}
-    ),
-    html.P("Click on the other tabs to see enemy list for the other games."),
   ],
   body = True
 )
