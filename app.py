@@ -69,7 +69,10 @@ title_card = dbc.Card(
       },
     ),
     html.A("About This Project", href='https://automateordie.io/xenosaga/', target='_blank'),
-    html.P("This is a searchable and sortable table of all enemies in the Xenosaga series, separated by game."),
+    html.P(
+      "This is a searchable and sortable table of all enemies in the Xenosaga series, separated by game.",
+      style = {"margin-bottom": "0px"}
+    ),
     html.P("Click on the other tabs to see enemy list for the other games."),
   ],
   body = True
