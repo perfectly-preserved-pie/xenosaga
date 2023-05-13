@@ -135,7 +135,6 @@ ep1_grid = dag.AgGrid(
   className = "ag-theme-alpine-dark",
 )
 
-ep2_numeric_cols = ['HP', 'EXP', 'CPTS', 'SPTS', 'STR', 'VIT', 'POWER', 'ARMOR', 'EATK', 'EDEF', 'DEX', 'EVA']
 # Create the Dash AgGrid for episode 2
 ep2_grid = dag.AgGrid(
   id = "ep2_grid",
@@ -154,7 +153,7 @@ ep2_grid = dag.AgGrid(
       "filter": "agNumberColumnFilter",
       # Insert commas in the numeric columns
       "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
-    } if i in ep2_numeric_cols else {
+    } if pd.api.types.is_numeric_dtype(ep2_df[i]) == True else {
       "field": i,
       "type": "textColumn",
       "filter": "agTextColumnFilter",
@@ -169,7 +168,6 @@ ep2_grid = dag.AgGrid(
   className = "ag-theme-alpine-dark",
 )
 
-ep3_numeric_cols = ['HP', 'EXP', 'EP', 'SP', 'Gold', 'Break Limit']
 # Create the Dash AgGrid for episode 3
 ep3_grid = dag.AgGrid(
   id = "ep3_grid",
@@ -188,7 +186,7 @@ ep3_grid = dag.AgGrid(
       "filter": "agNumberColumnFilter",
       # Insert commas in the numeric columns
       "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
-    } if i in ep3_numeric_cols else {
+    } if pd.api.types.is_numeric_dtype(ep3_df[i]) == True else {
       "field": i,
       "type": "textColumn",
       "filter": "agTextColumnFilter",
