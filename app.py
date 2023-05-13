@@ -51,7 +51,7 @@ server = app.server
 title_card = dbc.Card(
   [
     html.H3("Xenosaga Enemy Database", className="card-title"),
-    html.I("Mystic powers, grant me a miracle! ✨"),
+    html.I("Mystic powers, grant me a miracle! ✨", style={"margin-bottom": "10px"}),
     html.Br(),
     html.I( # use a GitHub icon for my repo
       className="bi bi-github",
