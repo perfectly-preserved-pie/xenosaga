@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc, dash_table
+from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
