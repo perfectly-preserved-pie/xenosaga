@@ -25,5 +25,8 @@ df = df.replace('', 'N/A')
 
 #df.fillna('N/A', inplace=True)
 
+# Sort the dataframe alphabetically by Name
+df.sort_values(by=['Name'], inplace=True)
+
 # Export dataframe to JSON
 df.to_json('json/episode2.json', orient='records')

@@ -138,5 +138,8 @@ df[cols] = df[cols].replace({',': ''}, regex=True)
 # Cast the numeric columns as nullable integers
 df[cols] = df[cols].astype('Int64')
 
+# Sort the dataframe alphabetically by Name
+df.sort_values(by=['Name'], inplace=True)
+
 # Export dataframe to JSON
 df.to_json('json/episode3.json', orient='records')

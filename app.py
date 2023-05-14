@@ -115,7 +115,6 @@ ep1_grid = dag.AgGrid(
     "resizable": True,
     "sortable": True,
     "filter": True,
-    "sort": 'asc'
   },
   columnDefs = [
     {
@@ -149,7 +148,6 @@ ep2_grid = dag.AgGrid(
     "resizable": True,
     "sortable": True,
     "filter": True,
-    "sort": 'asc'
   },
   columnDefs = [
     {
@@ -182,7 +180,6 @@ ep3_grid = dag.AgGrid(
     "resizable": True,
     "sortable": True,
     "filter": True,
-    "sort": 'asc'
   },
   columnDefs = [
     {

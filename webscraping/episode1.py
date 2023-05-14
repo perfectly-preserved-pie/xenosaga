@@ -81,5 +81,8 @@ for col in cols:
     except ValueError:
         print(f"Column '{col}' could not be cast as nullable integer.")
 
+# Sort the dataframe alphabetically by Name
+df.sort_values(by=['Name'], inplace=True)
+
 # Export to JSON
 df.to_json('json/episode1.json')
