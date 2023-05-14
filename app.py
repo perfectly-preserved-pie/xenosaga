@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc
+from dash import Dash, html, dcc, ctx, dash
 from dash.dependencies import Input, Output
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
@@ -223,7 +223,15 @@ app.layout = dbc.Container([
             tabs,
             html.Div(id="tab-content")
           ]
-        )
+        ),
+        dbc.Modal(
+          [
+            dbc.ModalHeader("More information about selected row"),
+            dbc.ModalBody(id="modal-content"),
+            dbc.ModalFooter(dbc.Button("Close", id="close", className="ml-auto")),
+          ],
+          id="modal",
+        ),
       ]
     ),
   ),
@@ -244,6 +252,31 @@ def render_content(tab):
     return tab_2
   elif tab == "ep3":
     return tab_3
+  
+@app.callback(
+    Output("modal", "is_open"),
+    Output("modal-content", "children"),
+    Input("tabs", "selectedRows"),
+    Input("close", "n_clicks"),
+    Input("ep1_grid", "selectedRows") # update the input ID here
+)
+def open_modal(tab_selection, _, grid_selection):
+    if ctx.triggered_id == "close":
+        return False, dash.no_update
+    if grid_selection:
+        return True, "You selected " + ", ".join(
+            [
+                "{} (model {} and price {})".format(
+                    s["HP"],
+                    s["EXP"],
+                )
+                for s in grid_selection
+            ]
+        )
+    elif tab_selection:
+        return True, "You selected a row from a different tab."
+    return dash.no_update, dash.no_update
+
 
 # Run the app
 #app.run_server(debug=True)
