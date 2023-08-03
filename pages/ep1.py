@@ -25,34 +25,43 @@ def get_value_getter(column_name):
 
 # Create the Dash AgGrid for episode 1
 def layout():
-    return dag.AgGrid(
-        id = "ep1_grid",
-        rowData = ep1_df.to_dict("records"),
-        #columnDefs = [{"field": i} for i in ep1_df.columns],
-        defaultColDef = {
-            "resizable": True,
-            "sortable": True,
-            "filter": True,
-        },
-        columnDefs = [
-            {
-            "field": i,
-            "type": "numericColumn",
-            "filter": "agNumberColumnFilter",
-            # Insert commas in the numeric columns
-            "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
-            "valueGetter": get_value_getter(i),
-            } if i in ep1_numeric_cols else {
-            "field": i,
-            "type": "textColumn",
-            "filter": "agTextColumnFilter",
-            "floatingFilter": True,
-            "suppressMenu": True,
-            "filterParams": {
-                "filterPlaceholder": "Search...",
+    return html.Div(
+        dag.AgGrid(
+            id="ep1_grid",
+            rowData=ep1_df.to_dict("records"),
+            defaultColDef={
+                "resizable": True,
+                "sortable": True,
+                "filter": True,
             },
-            } for i in ep1_df.columns
-        ],
-        columnSize = "autoSize",
-        className = "ag-theme-alpine-dark",
+            columnDefs=[
+                {
+                    "field": i,
+                    "type": "numericColumn",
+                    "filter": "agNumberColumnFilter",
+                    # Insert commas in the numeric columns
+                    "valueFormatter": {
+                        "function": "d3.format(',.0f')(params.value)"
+                    },
+                    "valueGetter": get_value_getter(i),
+                }
+                if i in ep1_numeric_cols
+                else {
+                    "field": i,
+                    "type": "textColumn",
+                    "filter": "agTextColumnFilter",
+                    "floatingFilter": True,
+                    "suppressMenu": True,
+                    "filterParams": {
+                        "filterPlaceholder": "Search...",
+                    },
+                }
+                for i in ep1_df.columns
+            ],
+            columnSize="autoSize",
+            className="ag-theme-alpine-dark",
+            style={"height": "80vh"},  # Set the height to 80% of the viewport height
+        ),
+        style={"height": "100%"},  # Ensure the grid's container fills the available vertical space
     )
+

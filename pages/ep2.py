@@ -15,33 +15,37 @@ ep2_df = pd.read_json('json/episode2.json')
 
 # Create the Dash AgGrid for episode 2
 def layout():
-    return dag.AgGrid(
-        id = "ep2_grid",
-        rowData = ep2_df.to_dict("records"),
-        #columnDefs = [{"field": i} for i in ep2_df.columns],
-        defaultColDef = {
-            "resizable": True,
-            "sortable": True,
-            "filter": True,
-        },
-        columnDefs = [
-            {
-            "field": i,
-            "type": "numericColumn",
-            "filter": "agNumberColumnFilter",
-            # Insert commas in the numeric columns
-            "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
-            } if pd.api.types.is_numeric_dtype(ep2_df[i]) == True else {
-            "field": i,
-            "type": "textColumn",
-            "filter": "agTextColumnFilter",
-            "floatingFilter": True,
-            "suppressMenu": True,
-            "filterParams": {
-                "filterPlaceholder": "Search...",
-            },
-            } for i in ep2_df.columns
-        ],
-        columnSize = "autoSize",
-        className = "ag-theme-alpine-dark",
+    return html.Div(
+            dag.AgGrid(
+                id = "ep2_grid",
+                rowData = ep2_df.to_dict("records"),
+                #columnDefs = [{"field": i} for i in ep2_df.columns],
+                defaultColDef = {
+                    "resizable": True,
+                    "sortable": True,
+                    "filter": True,
+                },
+                columnDefs = [
+                    {
+                    "field": i,
+                    "type": "numericColumn",
+                    "filter": "agNumberColumnFilter",
+                    # Insert commas in the numeric columns
+                    "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
+                    } if pd.api.types.is_numeric_dtype(ep2_df[i]) == True else {
+                    "field": i,
+                    "type": "textColumn",
+                    "filter": "agTextColumnFilter",
+                    "floatingFilter": True,
+                    "suppressMenu": True,
+                    "filterParams": {
+                        "filterPlaceholder": "Search...",
+                    },
+                    } for i in ep2_df.columns
+                ],
+                columnSize = "autoSize",
+                className = "ag-theme-alpine-dark",
+                style={"height": "80vh"},  # Set the height to 80% of the viewport height
+            ),
+            style={"height": "100%"},  # Ensure the grid's container fills the available vertical space
     )
