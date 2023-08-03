@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc, ctx, dash
+from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
@@ -135,7 +135,6 @@ ep1_grid = dag.AgGrid(
       },
     } for i in ep1_df.columns
   ],
-  dashGridOptions={"rowSelection": "single"},
   columnSize = "autoSize",
   className = "ag-theme-alpine-dark",
 )
@@ -224,15 +223,7 @@ app.layout = dbc.Container([
             tabs,
             html.Div(id="tab-content")
           ]
-        ),
-        dbc.Modal(
-          [
-            dbc.ModalHeader("More information about selected enemy"),
-            dbc.ModalBody(id="modal-content"),
-            dbc.ModalFooter(dbc.Button("Close", id="close", className="ml-auto")),
-          ],
-          id="modal",
-        ),
+        )
       ]
     ),
   ),
@@ -253,34 +244,6 @@ def render_content(tab):
     return tab_2
   elif tab == "ep3":
     return tab_3
-
-# Create a callback to open a modal when a row is selected in the episode 1 grid
-# Based on https://dashaggrid.pythonanywhere.com/other-examples/popup-from-cell-click
-@app.callback(
-  Output("modal", "is_open"),
-  Output("modal-content", "children"),
-  Input("ep1_grid", "selectedRows"),
-  Input("close", "n_clicks"),
-)
-def open_modal(selection, _):
-  if ctx.triggered_id == "close":
-    return False, dash.no_update
-  if selection:
-    # Use Markdown to format the modal content
-    return True, dcc.Markdown(f""" 
-      **Name:** {selection[0]['Name']}  \n
-      **HP:** {selection[0]['HP']}  \n
-      **EXP:** {selection[0]['EXP']}  \n
-      **TP:** {selection[0]['TP']}  \n
-      **EP:** {selection[0]['SP']}  \n
-      **SP:** {selection[0]['SP']}  \n
-      **Cash:** {selection[0]['Cash']}  \n
-      **Normal Drop:** {selection[0]['Normal Drop']}  \n
-      **Rare Drop:** {selection[0]['Rare Drop']}  \n
-      **Type:** {selection[0]['Type']}  \n
-      **Weakness:** {selection[0]['Weakness']}  \n
-      """)
-  return dash.no_update, dash.no_update
 
 # Run the app
 #app.run_server(debug=True)
