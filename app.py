@@ -4,6 +4,8 @@ from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import logging
 from pages import ep1, ep2, ep3
+import pandas as pd
+import dash_ag_grid as dag
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -14,6 +16,10 @@ external_stylesheets = [
   "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates@V1.0.2/dbc.min.css", # https://github.com/AnnMarieW/dash-bootstrap-templates#dbccss--stylesheet
 
 ]
+
+ep1_df = pd.read_json('json/episode1.json') # Read the JSON files into dataframes 
+ep2_df = pd.read_json('json/episode2.json')
+ep3_df = pd.read_json('json/episode3.json')
 
 app = Dash(
   __name__, 
@@ -103,57 +109,77 @@ server = app.server
 app.layout = html.Div([
   dcc.Location(id='url', refresh=False),
   html.Div(title_card),
-  tabs,
-  html.Div(id='page-content')
+  html.Div([
+    dbc.Button("Episode I", id='btn-ep1', className="mr-2"),
+    dbc.Button("Episode II", id='btn-ep2', className="mr-2"),
+    dbc.Button("Episode III", id='btn-ep3', className="mr-2"),
+  ]),
+  html.Div(id='grid-container'),
+  modal
 ])
 
-@app.callback(
-  Output('url', 'pathname'),
-  Input('tabs', 'value')
-)
-def on_tab_click(value):
-  return value
+# Create a function to generate the column definitions based on the dataframe
+def generate_column_defs(df):
+  numeric_cols = ['HP', 'EXP', 'TP', 'EP', 'SP', 'Cash'] if 'Cash' in df.columns else []
 
-# Define callback to update page layout
-@app.callback(
-  Output('page-content', 'children'),
-  Input('url', 'pathname')
-)
-def display_page(pathname):
-  if pathname == '/ep2':
-    return ep2.layout()
-  elif pathname == '/ep3':
-    return ep3.layout()
-  else:
-    return ep1.layout()
+  def get_value_getter(column_name):
+    if column_name in numeric_cols:
+      return {"function": f"Number(params.data.{column_name}.split('-')[0])"}
+    else:
+      return None
   
-# Create a callback to open a modal when a row is selected in the episode 1 grid
-# Based on https://dashaggrid.pythonanywhere.com/other-examples/popup-from-cell-click
+  column_defs = [
+    {
+      "field": i,
+      "type": "numericColumn",
+      "filter": "agNumberColumnFilter",
+      # Insert commas in the numeric columns
+      "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
+      "valueGetter": get_value_getter(i),
+    } if i in numeric_cols else {
+      "field": i,
+      "type": "textColumn",
+      "filter": "agTextColumnFilter",
+      "floatingFilter": True,
+      "suppressMenu": True,
+      "filterParams": {
+        "filterPlaceholder": "Search...",
+      },
+    } for i in df.columns
+  ]
+  
+  return column_defs
+
+
 @app.callback(
-  Output("modal", "is_open"),
-  Output("modal-content", "children"),
-  Input("ep1_grid", "selectedRows"),
-  Input("close", "n_clicks"),
+  Output('grid-container', 'children'),
+  [
+    Input('btn-ep1', 'n_clicks'),
+    Input('btn-ep2', 'n_clicks'),
+    Input('btn-ep3', 'n_clicks')
+  ]
 )
-def open_modal(selection, _):
-  if ctx.triggered_id == "close":
-    return False, dash.no_update
-  if selection:
-    # Use Markdown to format the modal content
-    return True, dcc.Markdown(f""" 
-      **Name:** {selection[0]['Name']}  \n
-      **HP:** {selection[0]['HP']}  \n
-      **EXP:** {selection[0]['EXP']}  \n
-      **TP:** {selection[0]['TP']}  \n
-      **EP:** {selection[0]['SP']}  \n
-      **SP:** {selection[0]['SP']}  \n
-      **Cash:** {selection[0]['Cash']}  \n
-      **Normal Drop:** {selection[0]['Normal Drop']}  \n
-      **Rare Drop:** {selection[0]['Rare Drop']}  \n
-      **Type:** {selection[0]['Type']}  \n
-      **Weakness:** {selection[0]['Weakness']}  \n
-      """)
-  return dash.no_update, dash.no_update
+def update_grid(n1, n2, n3):
+  ctx = dash.callback_context
+  if not ctx.triggered:
+    data = ep1_df  # default data
+  else:
+    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    if button_id == 'btn-ep1':
+      data = ep1_df
+    elif button_id == 'btn-ep2':
+      data = ep2_df
+    elif button_id == 'btn-ep3':
+      data = ep3_df
+
+  return dag.AgGrid(
+    id='grid',
+    rowData=data.to_dict('records'),
+    columnDefs=generate_column_defs(data),
+    columnSize="autoSize",
+    className="ag-theme-alpine-dark",
+    # ...other grid parameters...
+  )
 
 # Run the app
 app.run_server(debug=True)
