@@ -124,7 +124,7 @@ def generate_column_defs(df):
 
   def get_value_getter(column_name):
     if column_name in numeric_cols:
-      return {"function": f"Number(params.data.{column_name}.split('-')[0])"}
+      return {"function": f"return params.data.{column_name} && params.data.{column_name}.split('-')[0] ? Number(params.data.{column_name}.split('-')[0]) : null"}
     else:
       return None
   
