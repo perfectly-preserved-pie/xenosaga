@@ -152,9 +152,11 @@ def generate_column_defs(df):
   
   return column_defs
 
-
+# A callback to generate the grid
 @app.callback(
   Output('grid-container', 'children'),
+  Output('grid', 'rowData'),
+  Output('grid', 'columnDefs'),
   [
     Input('btn-ep1', 'n_clicks'),
     Input('btn-ep2', 'n_clicks'),
@@ -174,14 +176,24 @@ def update_grid(n1, n2, n3):
     elif button_id == 'btn-ep3':
       data = ep3_df
 
-  return dag.AgGrid(
+  grid = dag.AgGrid(
     id='grid',
     rowData=data.to_dict('records'),
     columnDefs=generate_column_defs(data),
-    columnSize="autoSize",
     className="ag-theme-alpine-dark",
     # ...other grid parameters...
   )
+
+  return grid, data.to_dict('records'), generate_column_defs(data)
+
+# Create a callback to update the column size to autoSize
+# Gets triggered when the columnDefs property of the grid changes. This callback will then set the columnSize property to "autoSize"
+@app.callback(
+  Output('grid', 'columnSize'),
+  [Input('grid', 'columnDefs')]
+)
+def update_column_size(_):
+  return "autoSize"
 
 # Create a callback to open a modal when a row is selected in the grid
 # Based on https://dashaggrid.pythonanywhere.com/other-examples/popup-from-cell-click
