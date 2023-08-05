@@ -207,21 +207,12 @@ def open_modal(cell_clicked_data, _, row_data):
   # Get the row data of the clicked cell
   selected_row_data = row_data[cell_clicked_data["rowIndex"]]
 
-  # Use Markdown to format the modal content
-  return True, dcc.Markdown(f""" 
-    **Name:** {selected_row_data['Name']}  \n
-    **HP:** {selected_row_data['HP']}  \n
-    **EXP:** {selected_row_data['EXP']}  \n
-    **TP:** {selected_row_data['TP']}  \n
-    **EP:** {selected_row_data['EP']}  \n
-    **SP:** {selected_row_data['SP']}  \n
-    **Cash:** {selected_row_data['Cash']}  \n
-    **Normal Drop:** {selected_row_data['Normal Drop']}  \n
-    **Rare Drop:** {selected_row_data['Rare Drop']}  \n
-    **Type:** {selected_row_data['Type']}  \n
-    **Weakness:** {selected_row_data['Weakness']}  \n
-    """)
+  # Generate the Markdown content dynamically based on the columns in the selected row data
+  content = []
+  for key, value in selected_row_data.items():
+    content.append(f"**{key}:** {value}  \n")
 
+  return True, dcc.Markdown(''.join(content))
 
 # Run the app
 app.run_server(debug=True)
