@@ -1,6 +1,6 @@
 from dash import Dash, dcc, html, no_update, ctx
 import dash
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 import logging
 from pages import ep1, ep2, ep3
@@ -115,7 +115,9 @@ app.layout = html.Div([
     dbc.Button("Episode III", id='btn-ep3', className="mr-2"),
   ]),
   html.Div(id='grid-container'),
-  modal
+  modal,
+  # Add a hidden grid in the initial layout
+  html.Div(dag.AgGrid(id='grid'), style={'display': 'none'}),
 ])
 
 # Create a function to generate the column definitions based on the dataframe
@@ -180,6 +182,46 @@ def update_grid(n1, n2, n3):
     className="ag-theme-alpine-dark",
     # ...other grid parameters...
   )
+
+# Create a callback to open a modal when a row is selected in the grid
+# Based on https://dashaggrid.pythonanywhere.com/other-examples/popup-from-cell-click
+@app.callback(
+  Output("modal", "is_open"),
+  Output("modal-content", "children"),
+  [
+    Input("grid", "cellClicked"),
+    Input("close", "n_clicks")
+  ],
+  [State("grid", "rowData")]
+)
+def open_modal(cell_clicked_data, _, row_data):
+  if not cell_clicked_data:  # if no cell is clicked, don't update the modal
+    return dash.no_update, dash.no_update
+
+  ctx = dash.callback_context
+  button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+
+  if button_id == "close":
+    return False, dash.no_update
+
+  # Get the row data of the clicked cell
+  selected_row_data = row_data[cell_clicked_data["rowIndex"]]
+
+  # Use Markdown to format the modal content
+  return True, dcc.Markdown(f""" 
+    **Name:** {selected_row_data['Name']}  \n
+    **HP:** {selected_row_data['HP']}  \n
+    **EXP:** {selected_row_data['EXP']}  \n
+    **TP:** {selected_row_data['TP']}  \n
+    **EP:** {selected_row_data['EP']}  \n
+    **SP:** {selected_row_data['SP']}  \n
+    **Cash:** {selected_row_data['Cash']}  \n
+    **Normal Drop:** {selected_row_data['Normal Drop']}  \n
+    **Rare Drop:** {selected_row_data['Rare Drop']}  \n
+    **Type:** {selected_row_data['Type']}  \n
+    **Weakness:** {selected_row_data['Weakness']}  \n
+    """)
+
 
 # Run the app
 app.run_server(debug=True)
