@@ -138,6 +138,7 @@ def generate_column_defs(df):
       # Insert commas in the numeric columns
       "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
       "valueGetter": get_value_getter(i),
+      "minWidth": 120,  # Minimum width of 100 pixels
     } if i in numeric_cols else {
       "field": i,
       "type": "textColumn",
@@ -147,6 +148,7 @@ def generate_column_defs(df):
       "filterParams": {
         "filterPlaceholder": "Search...",
       },
+      "minWidth": 120,  # Minimum width of 100 pixels
     } for i in df.columns
   ]
   
