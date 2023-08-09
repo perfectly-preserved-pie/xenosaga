@@ -73,13 +73,24 @@ df['SP'] = df['SP'].str.replace(r'200.*', '200', regex=True)
 # At this point I had to export the dataframe as a CSV, edit it in Excel to split some of the bosses and their minions into separate rows, and then import it back into Python
 # Kind of a pain in the ass
 
-# Loop through the dataframe's columns and try to cast as nullable integers
-cols = ['HP', 'EXP', 'EP', 'SP', 'Cash', 'TP']
-for col in cols:
-    try:
-        df[col] = df[col].astype('Int64')
-    except ValueError:
-        print(f"Column '{col}' could not be cast as nullable integer.")
+# Convert non-numeric entries to their average or single integer value
+def convert_to_avg(x):
+    if isinstance(x, str) and '-' in x:
+        low, high = x.split('-')
+        return (int(low) + int(high)) // 2  # Calculate the average
+    else:
+        return int(x)
+
+# Cast as nullable integers
+numeric_cols = ['HP', 'EXP', 'EP', 'SP', 'Cash', 'TP']
+for col in numeric_cols:
+    df[col] = df[col].apply(convert_to_avg)
+    df[col] = df[col].astype('Int64')  # Cast to nullable integer
+
+# Cast name as string dtype
+string_cols = ['Name', 'Normal Drop', 'Rare Drop', 'Type', 'Weakness']
+for col in string_cols:
+    df[col] = df[col].astype(pd.StringDtype())
 
 # Sort the dataframe alphabetically by Name
 df.sort_values(by=['Name'], inplace=True)

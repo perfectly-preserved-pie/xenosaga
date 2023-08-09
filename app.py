@@ -93,7 +93,7 @@ tabs = dcc.Tabs(
 # Inside app.layout
 modal = dbc.Modal(
   [
-    dbc.ModalHeader("Selected Row Information"),
+    dbc.ModalHeader("Selected Enemy Stats"),
     dbc.ModalBody(id="modal-content"),
     dbc.ModalFooter(
         dbc.Button("Close", id="close", className="ml-auto", n_clicks=0)
@@ -135,10 +135,13 @@ def generate_column_defs(df):
       "field": i,
       "type": "numericColumn",
       "filter": "agNumberColumnFilter",
+      "suppressMenu": True,
       # Insert commas in the numeric columns
       "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
       "valueGetter": get_value_getter(i),
       "minWidth": 120,  # Minimum width of 100 pixels
+      "resizable": True,
+      "sortable": True,
     } if i in numeric_cols else {
       "field": i,
       "type": "textColumn",
@@ -149,6 +152,8 @@ def generate_column_defs(df):
         "filterPlaceholder": "Search...",
       },
       "minWidth": 120,  # Minimum width of 100 pixels
+      "resizable": True,
+      "sortable": True,
     } for i in df.columns
   ]
   
@@ -195,7 +200,7 @@ def update_grid(n1, n2, n3):
   [Input('grid', 'columnDefs')]
 )
 def update_column_size(_):
-  return "autoSize"
+  return "responsiveSizeToFit"
 
 # Create a callback to open a modal when a row is selected in the grid
 # Based on https://dashaggrid.pythonanywhere.com/other-examples/popup-from-cell-click
@@ -227,6 +232,21 @@ def open_modal(cell_clicked_data, _, row_data):
     content.append(f"**{key}:** {value}  \n")
 
   return True, dcc.Markdown(''.join(content))
+
+app.clientside_callback(
+  """
+  function(n1, n2, n3) {
+    autoSizeAllColumns(n1, n2, n3, "grid"); // Replace "grid" with your grid's ID
+  }
+  """,
+  Output('dummy-output', 'children'), # Dummy output to satisfy callback requirements
+  [
+    Input('btn-ep1', 'n_clicks'),
+    Input('btn-ep2', 'n_clicks'),
+    Input('btn-ep3', 'n_clicks')
+  ],
+  prevent_initial_call=True
+)
 
 # Run the app
 app.run_server(debug=True)
