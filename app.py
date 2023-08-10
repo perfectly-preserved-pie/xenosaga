@@ -106,7 +106,8 @@ modal = dbc.Modal(
 # For Gunicorn
 server = app.server
 
-app.layout = html.Div([
+app.layout = html.Div(
+  [
   dcc.Location(id='url', refresh=False),
   html.Div(title_card),
   html.Div([
@@ -114,11 +115,18 @@ app.layout = html.Div([
     dbc.Button("Episode II", id='btn-ep2', className="mr-2"),
     dbc.Button("Episode III", id='btn-ep3', className="mr-2"),
   ]),
-  html.Div(id='grid-container'),
+  html.Div(id='grid-container', style={'flex': '1'}),
   modal,
   # Add a hidden grid in the initial layout
   html.Div(dag.AgGrid(id='grid'), style={'display': 'none'}),
-])
+  ],
+  style={
+    'display': 'flex',
+    'flexDirection': 'column',
+    'height': '100vh'
+  }
+)
+
 
 # Create a function to generate the column definitions based on the dataframe
 def generate_column_defs(df):
@@ -188,6 +196,7 @@ def update_grid(n1, n2, n3):
     rowData=data.to_dict('records'),
     columnDefs=generate_column_defs(data),
     className="ag-theme-alpine-dark",
+    style={'height': '100%'}
     # ...other grid parameters...
   )
 
