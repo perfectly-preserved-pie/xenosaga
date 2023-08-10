@@ -239,6 +239,8 @@ def open_modal(cell_clicked_data, _, row_data):
   if button_id == "close":
     return False, dash.no_update
 
+  clicked_column = cell_clicked_data['colId']  # Get the clicked column name
+
   # Get the row data of the clicked cell
   selected_row_data = row_data[cell_clicked_data["rowIndex"]]
 
@@ -249,7 +251,12 @@ def open_modal(cell_clicked_data, _, row_data):
       formatted_value = f"{value:,}"  # Format number with thousands separator
     else:
       formatted_value = value
-    content.append(f"**{key}:** {formatted_value}  \n")\
+
+    # If this is the clicked column, apply special formatting
+    if key == clicked_column:
+      content.append(f'### {key}: {formatted_value}  \n')
+    else:
+      content.append(f"**{key}:** {formatted_value}  \n")
 
   return True, dcc.Markdown(''.join(content))
 
