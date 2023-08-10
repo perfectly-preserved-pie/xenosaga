@@ -1,11 +1,10 @@
 from dash import Dash, dcc, html, no_update, ctx
-import dash
 from dash.dependencies import Input, Output, State
+import dash
+import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import logging
-from pages import ep1, ep2, ep3
 import pandas as pd
-import dash_ag_grid as dag
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -33,7 +32,7 @@ app = Dash(
       'type': 'application/javascript'
     },
   ],
-  use_pages=True,
+  use_pages=False,
   # Because we're displaying tab content dynamically, we need to suppress callback exceptions
   # https://dash.plotly.com/callback-gotchas#callbacks-require-all-inputs-and-states-to-be-rendered-on-the-page
   suppress_callback_exceptions=True, 
