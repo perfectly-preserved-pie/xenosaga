@@ -132,10 +132,26 @@ app.layout = html.Div(
 
 # Create a function to generate the column definitions based on the dataframe
 def generate_column_defs(df):
-  numeric_cols = ['HP', 'EXP', 'TP', 'EP', 'SP', 'Cash'] if 'Cash' in df.columns else []
+  # Determine if a column is numeric based on a sampling of 100 values from the column
+  # I did this way because I'm too lazy to properly cast dtypes for the 30+ columns across all 3 episode dataframes
+  def is_numeric_col(df, column_name):
+    # If dtype is already numeric, return True
+    if pd.api.types.is_numeric_dtype(df[column_name].dtype):
+      return True
+    # If dtype is object, sample some rows and test if they can be converted to numbers
+    sample_values = df[column_name].dropna().sample(min(100, len(df))).tolist() # Sample at most 100 non-null values
+    try:
+      # Try converting the sample values to numbers
+      [float(x) for x in sample_values]
+      return True
+    except ValueError:
+      # If conversion fails, it's not a numeric column
+      return False
 
+  # Extracts the starting number from a cell's content, especially if the content represents a range like "100-200"
+  # This is used to sort the numeric columns properly
   def get_value_getter(column_name):
-    if column_name in numeric_cols:
+    if is_numeric_col(df, column_name):
       return {"function": f"return params.data.{column_name} && params.data.{column_name}.split('-')[0] ? Number(params.data.{column_name}.split('-')[0]) : null"}
     else:
       return None
@@ -143,30 +159,19 @@ def generate_column_defs(df):
   column_defs = [
     {
       "field": i,
-      "type": "numericColumn",
-      "filter": "agNumberColumnFilter",
+      "type": "numericColumn" if is_numeric_col(df, i) else "textColumn",
+      "filter": "agNumberColumnFilter" if is_numeric_col(df, i) else "agTextColumnFilter",
       "suppressMenu": True,
       # Insert commas in the numeric columns
-      "valueFormatter": {"function": "d3.format(',.0f')(params.value)"},
+      "valueFormatter": {"function": "d3.format(',.0f')(params.value)"} if is_numeric_col(df, i) else None,
       "valueGetter": get_value_getter(i),
       "minWidth": 120,  # Minimum width of 100 pixels
       "resizable": True,
       "sortable": True,
-    } if i in numeric_cols else {
-      "field": i,
-      "type": "textColumn",
-      "filter": "agTextColumnFilter",
       "floatingFilter": True,
-      "suppressMenu": True,
-      "filterParams": {
-        "filterPlaceholder": "Search...",
-      },
-      "minWidth": 120,  # Minimum width of 100 pixels
-      "resizable": True,
-      "sortable": True,
+      "floatingFilterComponentParams": {"suppressFilterButton": False} if is_numeric_col(df, i) else {"filterPlaceholder": "Search..."},
     } for i in df.columns
   ]
-  
   return column_defs
 
 # A callback to generate the grid
