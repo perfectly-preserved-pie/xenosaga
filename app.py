@@ -244,20 +244,5 @@ def open_modal(cell_clicked_data, _, row_data):
 
   return True, dcc.Markdown(''.join(content))
 
-app.clientside_callback(
-  """
-  function(n1, n2, n3) {
-    autoSizeAllColumns(n1, n2, n3, "grid"); // Replace "grid" with your grid's ID
-  }
-  """,
-  Output('dummy-output', 'children'), # Dummy output to satisfy callback requirements
-  [
-    Input('btn-ep1', 'n_clicks'),
-    Input('btn-ep2', 'n_clicks'),
-    Input('btn-ep3', 'n_clicks')
-  ],
-  prevent_initial_call=True
-)
-
 # Run the app
 app.run_server(debug=True)
