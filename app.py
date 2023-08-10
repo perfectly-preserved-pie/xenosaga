@@ -245,7 +245,11 @@ def open_modal(cell_clicked_data, _, row_data):
   # Generate the Markdown content dynamically based on the columns in the selected row data
   content = []
   for key, value in selected_row_data.items():
-    content.append(f"**{key}:** {value}  \n")
+    if isinstance(value, (int, float)):
+      formatted_value = f"{value:,}"  # Format number with thousands separator
+    else:
+      formatted_value = value
+    content.append(f"**{key}:** {formatted_value}  \n")\
 
   return True, dcc.Markdown(''.join(content))
 
