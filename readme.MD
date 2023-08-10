@@ -1,5 +1,7 @@
 # Xenosaga Enemy Database
 This is a modern, mobile optimized web application that hosts a searchable and sortable database of all the enemies in the Xenosaga PS2 series. Every enemy has detailed stats, weaknessess, loot drops, etc. Each game has been split into its own separate table/tab for organization.
+
+## How To Use
 Each column in the grid can be resized, filtered, sorted, and hidden as you'd like. Clicking anywhere on a row will make a modal pop up that contains that selected enemey's stats.
 
 The data comes from the following sources, which I extracted using BeautifulSoup 4 and regex (except for Episode 2, which I had to do manually):
