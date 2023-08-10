@@ -4,7 +4,7 @@ This is a modern, mobile optimized web application that hosts a searchable and s
 ## How To Use
 Each column in the grid can be resized, filtered, sorted, and hidden as you'd like. Clicking anywhere on a row will make a modal pop up that contains that selected enemey's stats.
 
-## Where Did I Get This Data From?
+## Data Sources
 The data comes from the following sources, which I extracted using BeautifulSoup 4 and regex (except for Episode 2, which I had to do manually):
 
 * Episode 1 https://gamefaqs.gamespot.com/ps2/519264-xenosaga-episode-i-der-wille-zur-macht/faqs/22927
