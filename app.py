@@ -89,7 +89,8 @@ tabs = dcc.Tabs(
   ],
 )
 
-# Inside app.layout
+# Create a modal to display the selected enemy stats
+# The modal will be populated by the callback below
 modal = dbc.Modal(
   [
     dbc.ModalHeader("Selected Enemy Stats"),
@@ -119,6 +120,8 @@ app.layout = html.Div(
   # Add a hidden grid in the initial layout
   html.Div(dag.AgGrid(id='grid'), style={'display': 'none'}),
   ],
+  # Set the flexbox direction to column
+  # This will make the grid fill the entire page
   style={
     'display': 'flex',
     'flexDirection': 'column',
