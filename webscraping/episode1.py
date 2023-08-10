@@ -58,14 +58,6 @@ df = pd.DataFrame(
 # Replace weird Unicode formatting with the actual ampersand
 df['Name'] = df['Name'].replace('&amp;', '&', regex=True)
 
-# Insert thousands separators into the numbers
-df['HP'] = df['HP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['EXP'] = df['EXP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['TP'] = df['TP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['EP'] = df['EP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['SP'] = df['SP'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-df['Cash'] = df['Cash'].str.replace(r'(\d)(?=(\d\d\d)+(?!\d))', r'\1,', regex=True)
-
 # Replace the string None with N/A
 df = df.replace('None', 'N/A')
 
@@ -81,5 +73,27 @@ df['SP'] = df['SP'].str.replace(r'200.*', '200', regex=True)
 # At this point I had to export the dataframe as a CSV, edit it in Excel to split some of the bosses and their minions into separate rows, and then import it back into Python
 # Kind of a pain in the ass
 
+# Convert non-numeric entries to their average or single integer value
+def convert_to_avg(x):
+    if isinstance(x, str) and '-' in x:
+        low, high = x.split('-')
+        return (int(low) + int(high)) // 2  # Calculate the average
+    else:
+        return int(x)
+
+# Cast as nullable integers
+numeric_cols = ['HP', 'EXP', 'EP', 'SP', 'Cash', 'TP']
+for col in numeric_cols:
+    df[col] = df[col].apply(convert_to_avg)
+    df[col] = df[col].astype('Int64')  # Cast to nullable integer
+
+# Cast name as string dtype
+string_cols = ['Name', 'Normal Drop', 'Rare Drop', 'Type', 'Weakness']
+for col in string_cols:
+    df[col] = df[col].astype(pd.StringDtype())
+
+# Sort the dataframe alphabetically by Name
+df.sort_values(by=['Name'], inplace=True)
+
 # Export to JSON
-df.to_json('episode1.json')
+df.to_json('json/episode1.json')
