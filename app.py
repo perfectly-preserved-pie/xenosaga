@@ -63,7 +63,7 @@ title_card = dbc.Card(
       className="bi bi-github",
       style = {
         "margin-right": "5px",
-        "margin-left": "5px"
+        "margin-left": "0px"
       },
     ),
     html.A("GitHub", href='https://github.com/perfectly-preserved-pie/xenosaga', target='_blank'),
