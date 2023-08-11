@@ -290,16 +290,18 @@ def populate_modal(data, n1, n2, n3):
 
     content = []
     for key, value in selected_row.items():
-      if pd.api.types.is_numeric_dtype(value):  # Check if value is numeric
+      if pd.api.types.is_numeric_dtype(value) and pd.notna(value):  # Check if value is numeric and not NaN
         formatted_value = f"{int(value):,}"  # Format as integer with thousands separator
       else:
-        formatted_value = value  # If not numeric, use value as-is
+        formatted_value = "N/A" if pd.isna(value) else value  # Replace NaN with "N/A", otherwise use value as-is
+          
       logging.info(f"Key: {key}, Formatted Value: {formatted_value}")  # Log each key-value pair
       content.append(f"**{key}:** {formatted_value}  \n")  # Use two spaces and a newline character for separate lines
-    
+
     generated_content = ''.join(content)
     logging.info(f"Generated Content: {generated_content}")  # Log the generated content
     return dcc.Markdown(generated_content)
+
 
 
 
