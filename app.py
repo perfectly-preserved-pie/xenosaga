@@ -261,4 +261,4 @@ def open_modal(cell_clicked_data, _, row_data):
   return True, dcc.Markdown(''.join(content))
 
 # Run the app
-app.run_server(debug=True)
+#app.run_server(debug=True)
