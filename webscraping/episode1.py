@@ -95,5 +95,8 @@ for col in string_cols:
 # Sort the dataframe alphabetically by Name
 df.sort_values(by=['Name'], inplace=True)
 
+# Reset the index
+df.reset_index(drop=True, inplace=True)
+
 # Export to JSON
 df.to_json('json/episode1.json')
