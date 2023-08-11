@@ -262,5 +262,10 @@ def open_modal(cell_clicked_data, _, selected_data):
 
   return True, dcc.Markdown(''.join(content))
 
+@app.server.after_request
+def add_csp(response):
+  response.headers['Content-Security-Policy'] = "script-src 'self' 'unsafe-inline' https://plausible.automateordie.io https://enemies.xenosaga.games; object-src 'self';"
+  return response
+
 # Run the app
 #app.run_server(debug=True)
