@@ -38,8 +38,11 @@ app = Dash(
   suppress_callback_exceptions=True, 
   # Add meta tags for mobile devices
   # https://community.plotly.com/t/reorder-website-for-mobile-view/33669/5?
-  meta_tags = [
-    {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+  meta_tags=[
+    {"name": "viewport", "content": "width=device-width, initial-scale=1"},
+    # Set CSP to allow AG Grid to work
+    # See https://www.ag-grid.com/javascript-data-grid/security/#summary
+    {"http-equiv": "Content-Security-Policy", "content": "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src data:"}
   ],
 )
 
@@ -261,11 +264,6 @@ def open_modal(cell_clicked_data, _, selected_data):
       content.append(f"**{key}:** {formatted_value}  \n")
 
   return True, dcc.Markdown(''.join(content))
-
-@app.server.after_request
-def add_csp(response):
-  response.headers['Content-Security-Policy'] = "script-src 'self' 'unsafe-inline' https://plausible.automateordie.io https://enemies.xenosaga.games; object-src 'self';"
-  return response
 
 # Run the app
 #app.run_server(debug=True)
