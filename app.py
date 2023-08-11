@@ -139,7 +139,8 @@ def generate_column_defs(df):
     if pd.api.types.is_numeric_dtype(df[column_name].dtype):
       return True
     # If dtype is object, sample some rows and test if they can be converted to numbers
-    sample_values = df[column_name].dropna().sample(min(100, len(df))).tolist() # Sample at most 100 non-null values
+    non_na_values = df[column_name].dropna() # Drop NA values
+    sample_values = non_na_values.sample(min(100, len(non_na_values))).tolist()
     try:
       # Try converting the sample values to numbers
       [float(x) for x in sample_values]
