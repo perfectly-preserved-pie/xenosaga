@@ -226,11 +226,12 @@ def update_column_size(_):
   Output("modal-content", "children"),
   [
     Input("grid", "cellClicked"),
-    Input("close", "n_clicks")
+    Input("close", "n_clicks"),
+    State("grid", "selectedData")
   ],
   [State("grid", "rowData")]
 )
-def open_modal(cell_clicked_data, _, row_data):
+def open_modal(cell_clicked_data, _, selected_data):
   if not cell_clicked_data:  # if no cell is clicked, don't update the modal
     return dash.no_update, dash.no_update
 
@@ -243,7 +244,7 @@ def open_modal(cell_clicked_data, _, row_data):
   clicked_column = cell_clicked_data['colId']  # Get the clicked column name
 
   # Get the row data of the clicked cell
-  selected_row_data = row_data[cell_clicked_data["rowIndex"]]
+  selected_row_data = selected_data[0]
 
   # Generate the Markdown content dynamically based on the columns in the selected row data
   content = []
