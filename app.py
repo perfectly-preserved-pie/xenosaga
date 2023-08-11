@@ -1,12 +1,14 @@
 from dash import Dash, dcc, html, no_update, ctx
 from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 import dash
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import logging
+import logging
 import pandas as pd
 
-logging.getLogger().setLevel(logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 external_stylesheets = [
   dbc.icons.BOOTSTRAP,
@@ -38,11 +40,8 @@ app = Dash(
   suppress_callback_exceptions=True, 
   # Add meta tags for mobile devices
   # https://community.plotly.com/t/reorder-website-for-mobile-view/33669/5?
-  meta_tags=[
-    {"name": "viewport", "content": "width=device-width, initial-scale=1"},
-    # Set CSP to allow AG Grid to work
-    # See https://www.ag-grid.com/javascript-data-grid/security/#summary
-    {"http-equiv": "Content-Security-Policy", "content": "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src data:"}
+  meta_tags = [
+    {"name": "viewport", "content": "width=device-width, initial-scale=1"}
   ],
 )
 
@@ -112,6 +111,7 @@ server = app.server
 app.layout = html.Div(
   [
   dcc.Location(id='url', refresh=False),
+  dcc.Store(id='clicked-cell-unique-value'),
   html.Div(title_card),
   html.Div([
     dbc.Button("Episode I", id='btn-ep1', className="mr-2"),
@@ -129,7 +129,7 @@ app.layout = html.Div(
     'display': 'flex',
     'flexDirection': 'column',
     'height': '100vh'
-  }
+  },
 )
 
 
@@ -210,7 +210,6 @@ def update_grid(n1, n2, n3):
     style={'height': '100%'}
     # ...other grid parameters...
   )
-
   return grid, data.to_dict('records'), generate_column_defs(data)
 
 # Create a callback to update the column size to autoSize
@@ -226,44 +225,79 @@ def update_column_size(_):
 # Based on https://dashaggrid.pythonanywhere.com/other-examples/popup-from-cell-click
 @app.callback(
   Output("modal", "is_open"),
-  Output("modal-content", "children"),
+  Output("clicked-cell-unique-value", "data"),
   [
     Input("grid", "cellClicked"),
     Input("close", "n_clicks"),
-    State("grid", "selectedData")
   ],
-  [State("grid", "rowData")]
+  [State("modal", "is_open"), State("grid", "rowData")]
 )
-def open_modal(cell_clicked_data, _, selected_data):
-  if not cell_clicked_data:  # if no cell is clicked, don't update the modal
+def open_modal(cell_clicked_data, close_btn_clicks, modal_open, grid_data):
+  ctx = dash.callback_context
+  if not ctx.triggered:
     return dash.no_update, dash.no_update
 
-  ctx = dash.callback_context
   button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-  if button_id == "close":
+  if button_id == 'close':
     return False, dash.no_update
 
-  clicked_column = cell_clicked_data['colId']  # Get the clicked column name
+  elif button_id == 'grid':
+    if not cell_clicked_data or 'rowIndex' not in cell_clicked_data:
+      raise PreventUpdate
 
-  # Get the row data of the clicked cell
-  selected_row_data = selected_data[0]
+    # Extract the name of the clicked enemy using rowId
+    row_id = cell_clicked_data['rowId']
+    clicked_name = grid_data[int(row_id)]['Name']
+    return True, {"name": clicked_name}
 
-  # Generate the Markdown content dynamically based on the columns in the selected row data
-  content = []
-  for key, value in selected_row_data.items():
-    if isinstance(value, (int, float)):
-      formatted_value = f"{value:,}"  # Format number with thousands separator
-    else:
-      formatted_value = value
+  else:
+    raise PreventUpdate
 
-    # If this is the clicked column, apply special formatting
-    if key == clicked_column:
-      content.append(f'### {key}: {formatted_value}  \n')
-    else:
+# Create a callback to populate the modal with the correct data
+@app.callback(
+  Output("modal-content", "children"),
+  [Input("clicked-cell-unique-value", "data")],
+  [State("btn-ep1", "n_clicks"), State("btn-ep2", "n_clicks"), State("btn-ep3", "n_clicks")]
+)
+def populate_modal(data, n1, n2, n3):
+    if not data:
+      raise PreventUpdate
+
+    # Determine the correct dataframe based on the clicked episode button
+    clicks = {
+      'btn-ep1': n1 or 0,  # Default to 0 if None
+      'btn-ep2': n2 or 0,
+      'btn-ep3': n3 or 0
+    }
+    latest_button = max(clicks, key=clicks.get)
+
+    if latest_button == 'btn-ep1':
+      df = ep1_df
+    elif latest_button == 'btn-ep2':
+      df = ep2_df
+    elif latest_button == 'btn-ep3':
+      df = ep3_df
+
+    # Check if the desired name exists in the dataset
+    selected_rows = df[df["Name"] == data["name"]]
+    if selected_rows.empty:
+      logging.error(f"Name {data['name']} not found in dataset.")
+      raise PreventUpdate
+
+    selected_row = selected_rows.iloc[0]
+
+    content = []
+    for key, value in selected_row.items():
+      if isinstance(value, (int, float)):
+          formatted_value = f"{value:,}"  # Format number with thousands separator
+      else:
+          formatted_value = value
       content.append(f"**{key}:** {formatted_value}  \n")
 
-  return True, dcc.Markdown(''.join(content))
+    return dcc.Markdown(''.join(content))
+
+
 
 # Run the app
-#app.run_server(debug=True)
+app.run_server(debug=True)
