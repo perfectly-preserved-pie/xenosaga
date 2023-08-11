@@ -2,5 +2,6 @@ beautifulsoup4==4.12.2
 dash_bootstrap_components==1.4.2
 dash-ag-grid==2.3.0
 dash==2.11.1
+gunicorn==21.2.0
 pandas==2.0.3
 requests==2.31.0
