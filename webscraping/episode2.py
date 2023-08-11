@@ -25,6 +25,9 @@ df = df.replace('', 'N/A')
 
 #df.fillna('N/A', inplace=True)
 
+# Reset the index
+df.reset_index(drop=True, inplace=True)
+
 # Sort the dataframe alphabetically by Name
 df.sort_values(by=['Name'], inplace=True)
 
