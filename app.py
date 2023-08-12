@@ -160,6 +160,8 @@ def generate_column_defs(df):
     else:
       return None
   
+  # Create the column definitions
+  # The Name column is special because it's the only column that's pinned to the left
   column_defs = [
     {
       "field": "Name",  # Set the field to "Name" for the Name column
