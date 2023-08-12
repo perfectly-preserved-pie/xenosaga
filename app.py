@@ -162,20 +162,32 @@ def generate_column_defs(df):
   
   column_defs = [
     {
-      "field": i,
-      "type": "numericColumn" if is_numeric_col(df, i) else "textColumn",
-      "filter": "agNumberColumnFilter" if is_numeric_col(df, i) else "agTextColumnFilter",
-      "suppressMenu": True,
-      # Insert commas in the numeric columns
-      "valueFormatter": {"function": "d3.format(',.0f')(params.value)"} if is_numeric_col(df, i) else None,
-      "valueGetter": get_value_getter(i),
-      "minWidth": 120,  # Minimum width of 100 pixels
-      "resizable": True,
+      "field": "Name",  # Set the field to "Name" for the Name column
+      "type": "textColumn",
       "sortable": True,
-      "floatingFilter": True,
-      "floatingFilterComponentParams": {"suppressFilterButton": False} if is_numeric_col(df, i) else {"filterPlaceholder": "Search..."},
-    } for i in df.columns
+      "resizable": True,
+      "minWidth": 150,  # Set a minimum width for the Name column
+      "pinned": "left",  # Pin the Name column to the left
+    }
   ]
+  # Add other columns except the "Name" column
+  for i in df.columns:
+    if i != "Name":
+      column_def = {
+        "field": i,
+        "type": "numericColumn" if is_numeric_col(df, i) else "textColumn",
+        "filter": "agNumberColumnFilter" if is_numeric_col(df, i) else "agTextColumnFilter",
+        "suppressMenu": True,
+        "valueFormatter": {"function": "d3.format(',.0f')(params.value)"} if is_numeric_col(df, i) else None,
+        "valueGetter": get_value_getter(i),
+        "minWidth": 120,
+        "resizable": True,
+        "sortable": True,
+        "floatingFilter": True,
+        "floatingFilterComponentParams": {"suppressFilterButton": False} if is_numeric_col(df, i) else {"filterPlaceholder": "Search..."},
+      }
+      column_defs.append(column_def)
+        
   return column_defs
 
 # A callback to generate the grid
