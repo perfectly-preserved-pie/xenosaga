@@ -44,14 +44,14 @@ app = Dash(
 
 # Set the page title
 app.title = "Xenosaga Enemy Database"
-app.description = "A searchable and sortable table of all enemies in the Xenosaga series, separated by game."
+app.description = "A searchable and sortable table of all enemies in the Xenosaga series, organized by game."
 
 title_card = dbc.Card(
   [
     html.H3("Xenosaga Enemy Database", className="card-title"),
     html.I("Mystic powers, grant me a miracle! ✨", style={"margin-bottom": "10px"}),
     html.P(
-      "This is a mobile-optimized searchable, sortable, and filterable table of all enemies in the Xenosaga series, separated by game.",
+      "This is a mobile-friendly searchable, sortable, and filterable table of all enemies in the Xenosaga series, organized by game.",
       style = {"margin-bottom": "0px"}
     ),
     html.P(
