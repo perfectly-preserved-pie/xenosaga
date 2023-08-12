@@ -1,14 +1,11 @@
 from dash import Dash, dcc, html, no_update, ctx
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
+from loguru import logger
 import dash
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
-import logging
-import logging
 import pandas as pd
-
-logging.basicConfig(level=logging.INFO)
 
 external_stylesheets = [
   dbc.icons.BOOTSTRAP,
@@ -296,11 +293,11 @@ def populate_modal(data, n1, n2, n3):
   # Check if the desired name exists in the dataset
   selected_rows = df[df["Name"] == data["name"]]
   if selected_rows.empty:
-    logging.error(f"Name {data['name']} not found in dataset.")
+    logger.error(f"Name {data['name']} not found in dataset.")
     raise PreventUpdate
 
   selected_row = selected_rows.iloc[0]
-  logging.info(f"Selected Row Data: {selected_row}")  # Log the complete row data
+  logger.info(f"Selected Row Data: {selected_row}")  # Log the complete row data
 
   content = []
   for key, value in selected_row.items():
@@ -309,11 +306,11 @@ def populate_modal(data, n1, n2, n3):
     else:
       formatted_value = "N/A" if pd.isna(value) else value  # Replace NaN with "N/A", otherwise use value as-is
         
-    logging.info(f"Key: {key}, Formatted Value: {formatted_value}")  # Log each key-value pair
+    logger.info(f"Key: {key}, Formatted Value: {formatted_value}")  # Log each key-value pair
     content.append(f"**{key}:** {formatted_value}  \n")  # Use two spaces and a newline character for separate lines
 
   generated_content = ''.join(content)
-  logging.info(f"Generated Content: {generated_content}")  # Log the generated content
+  logger.info(f"Generated Content: {generated_content}")  # Log the generated content
   return dcc.Markdown(generated_content)
 
 # Run the app
