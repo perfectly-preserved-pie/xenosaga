@@ -261,49 +261,46 @@ def open_modal(cell_clicked_data, close_btn_clicks, modal_open, grid_data):
   [State("btn-ep1", "n_clicks"), State("btn-ep2", "n_clicks"), State("btn-ep3", "n_clicks")]
 )
 def populate_modal(data, n1, n2, n3):
-    if not data:
-      raise PreventUpdate
+  if not data:
+    raise PreventUpdate
 
-    # Determine the correct dataframe based on the clicked episode button
-    clicks = {
-      'btn-ep1': n1 or 0,  # Default to 0 if None
-      'btn-ep2': n2 or 0,
-      'btn-ep3': n3 or 0
-    }
-    latest_button = max(clicks, key=clicks.get)
+  # Determine the correct dataframe based on the clicked episode button
+  clicks = {
+    'btn-ep1': n1 or 0,  # Default to 0 if None
+    'btn-ep2': n2 or 0,
+    'btn-ep3': n3 or 0
+  }
+  latest_button = max(clicks, key=clicks.get)
 
-    if latest_button == 'btn-ep1':
-      df = ep1_df
-    elif latest_button == 'btn-ep2':
-      df = ep2_df
-    elif latest_button == 'btn-ep3':
-      df = ep3_df
+  if latest_button == 'btn-ep1':
+    df = ep1_df
+  elif latest_button == 'btn-ep2':
+    df = ep2_df
+  elif latest_button == 'btn-ep3':
+    df = ep3_df
 
-    # Check if the desired name exists in the dataset
-    selected_rows = df[df["Name"] == data["name"]]
-    if selected_rows.empty:
-      logging.error(f"Name {data['name']} not found in dataset.")
-      raise PreventUpdate
+  # Check if the desired name exists in the dataset
+  selected_rows = df[df["Name"] == data["name"]]
+  if selected_rows.empty:
+    logging.error(f"Name {data['name']} not found in dataset.")
+    raise PreventUpdate
 
-    selected_row = selected_rows.iloc[0]
-    logging.info(f"Selected Row Data: {selected_row}")  # Log the complete row data
+  selected_row = selected_rows.iloc[0]
+  logging.info(f"Selected Row Data: {selected_row}")  # Log the complete row data
 
-    content = []
-    for key, value in selected_row.items():
-      if pd.api.types.is_numeric_dtype(value) and pd.notna(value):  # Check if value is numeric and not NaN
-        formatted_value = f"{int(value):,}"  # Format as integer with thousands separator
-      else:
-        formatted_value = "N/A" if pd.isna(value) else value  # Replace NaN with "N/A", otherwise use value as-is
-          
-      logging.info(f"Key: {key}, Formatted Value: {formatted_value}")  # Log each key-value pair
-      content.append(f"**{key}:** {formatted_value}  \n")  # Use two spaces and a newline character for separate lines
+  content = []
+  for key, value in selected_row.items():
+    if pd.api.types.is_numeric_dtype(value) and pd.notna(value):  # Check if value is numeric and not NaN
+      formatted_value = f"{int(value):,}"  # Format as integer with thousands separator
+    else:
+      formatted_value = "N/A" if pd.isna(value) else value  # Replace NaN with "N/A", otherwise use value as-is
+        
+    logging.info(f"Key: {key}, Formatted Value: {formatted_value}")  # Log each key-value pair
+    content.append(f"**{key}:** {formatted_value}  \n")  # Use two spaces and a newline character for separate lines
 
-    generated_content = ''.join(content)
-    logging.info(f"Generated Content: {generated_content}")  # Log the generated content
-    return dcc.Markdown(generated_content)
-
-
-
+  generated_content = ''.join(content)
+  logging.info(f"Generated Content: {generated_content}")  # Log the generated content
+  return dcc.Markdown(generated_content)
 
 # Run the app
-app.run_server(debug=True)
+#app.run_server(debug=True)
