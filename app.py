@@ -313,5 +313,29 @@ def populate_modal(data, n1, n2, n3):
   logger.debug(f"Generated Content: {generated_content}")  # Log the generated content
   return dcc.Markdown(generated_content)
 
+# Create a callback to update the active state of the episode buttons
+@app.callback(
+  Output('btn-ep1', 'active'),
+  Output('btn-ep2', 'active'),
+  Output('btn-ep3', 'active'),
+  Input('btn-ep1', 'n_clicks'),
+  Input('btn-ep2', 'n_clicks'),
+  Input('btn-ep3', 'n_clicks')
+)
+def update_button_active_state(n1, n2, n3):
+  ctx = dash.callback_context
+  if not ctx.triggered:
+    return True, False, False  # Set "Episode I" button as active by default
+  button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+  if button_id == 'btn-ep1':
+    return True, False, False
+  elif button_id == 'btn-ep2':
+    return False, True, False
+  elif button_id == 'btn-ep3':
+    return False, False, True
+  else:
+    return True, False, False  # Default case
+
+
 # Run the app
 #app.run_server(debug=True)
