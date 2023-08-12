@@ -297,7 +297,7 @@ def populate_modal(data, n1, n2, n3):
     raise PreventUpdate
 
   selected_row = selected_rows.iloc[0]
-  logger.info(f"Selected Row Data: {selected_row}")  # Log the complete row data
+  logger.debug(f"Selected Row Data: {selected_row}")  # Log the complete row data
 
   content = []
   for key, value in selected_row.items():
@@ -306,11 +306,11 @@ def populate_modal(data, n1, n2, n3):
     else:
       formatted_value = "N/A" if pd.isna(value) else value  # Replace NaN with "N/A", otherwise use value as-is
         
-    logger.info(f"Key: {key}, Formatted Value: {formatted_value}")  # Log each key-value pair
+    logger.debug(f"Key: {key}, Formatted Value: {formatted_value}")  # Log each key-value pair
     content.append(f"**{key}:** {formatted_value}  \n")  # Use two spaces and a newline character for separate lines
 
   generated_content = ''.join(content)
-  logger.info(f"Generated Content: {generated_content}")  # Log the generated content
+  logger.debug(f"Generated Content: {generated_content}")  # Log the generated content
   return dcc.Markdown(generated_content)
 
 # Run the app
