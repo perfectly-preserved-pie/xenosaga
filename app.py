@@ -162,11 +162,11 @@ def generate_column_defs(df):
   column_defs = [
     {
       "field": "Name",  # Set the field to "Name" for the Name column
-      "type": "textColumn",
-      "sortable": True,
-      "resizable": True,
       "minWidth": 150,  # Set a minimum width for the Name column
       "pinned": "left",  # Pin the Name column to the left
+      "resizable": True,
+      "sortable": True,
+      "type": "textColumn",
     }
   ]
   # Add other columns except the "Name" column
@@ -174,17 +174,22 @@ def generate_column_defs(df):
     if i != "Name":
       column_def = {
         "field": i,
-        "type": "numericColumn" if is_numeric_col(df, i) else "textColumn",
         "filter": "agNumberColumnFilter" if is_numeric_col(df, i) else "agTextColumnFilter",
-        "suppressMenu": True,
-        "valueFormatter": {"function": "d3.format(',.0f')(params.value)"} if is_numeric_col(df, i) else None,
-        "valueGetter": get_value_getter(i),
+        "floatingFilter": True,
+        "floatingFilterComponentParams": {"suppressFilterButton": False} if is_numeric_col(df, i) else {"filterPlaceholder": "Search..."},
         "minWidth": 120,
         "resizable": True,
         "sortable": True,
-        "floatingFilter": True,
-        "floatingFilterComponentParams": {"suppressFilterButton": False} if is_numeric_col(df, i) else {"filterPlaceholder": "Search..."},
+        "suppressMenu": True,
+        "tooltipField": i, # Set the tooltip field to the column name
+        "type": "numericColumn" if is_numeric_col(df, i) else "textColumn",
+        "valueFormatter": {"function": "d3.format(',.0f')(params.value)"} if is_numeric_col(df, i) else None,
+        "valueGetter": get_value_getter(i),
       }
+      # Only add tooltipComponent for string columns
+      if not is_numeric_col(df, i):
+        column_def["tooltipComponent"] = "CustomTooltip"
+      
       column_defs.append(column_def)
         
   return column_defs
@@ -217,6 +222,8 @@ def update_grid(n1, n2, n3):
     id='grid',
     rowData=data.to_dict('records'),
     columnDefs=generate_column_defs(data),
+    dashGridOptions={"tooltipShowDelay": 300},
+    #defaultColDef={"editable": False,  "tooltipComponent": "CustomTooltip"},
     className="ag-theme-alpine-dark",
     style={'height': '100%'}
     # ...other grid parameters...
@@ -338,4 +345,4 @@ def update_button_active_state(n1, n2, n3):
 
 
 # Run the app
-#app.run_server(debug=True)
+app.run_server(debug=True)
