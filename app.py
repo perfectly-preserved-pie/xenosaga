@@ -167,6 +167,10 @@ def generate_column_defs(df):
       "resizable": True,
       "sortable": True,
       "type": "textColumn",
+      "filter": "agTextColumnFilter",
+      "floatingFilter": True,
+      "floatingFilterComponentParams": {"filterPlaceholder": "Search..."},
+      "suppressMenu": True
     }
   ]
   # Add other columns except the "Name" column
