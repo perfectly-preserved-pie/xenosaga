@@ -344,5 +344,6 @@ def update_button_active_state(n1, n2, n3):
     return True, False, False  # Default case
 
 
-# Run the app
-app.run_server(debug=True)
+# Run the app if running locally
+if __name__ == '__main__':
+  app.run_server(debug=True)
