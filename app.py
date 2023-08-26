@@ -55,7 +55,7 @@ title_card = dbc.Card(
       style = {"margin-bottom": "0px"}
     ),
     html.P(
-      "Click on the other tabs to see enemy list for the other games.",
+      "Clicking on anywhere on a row will display the selected enemy's stats in a popup.",
       style = {"margin-bottom": "0px"}
     ),
     html.I( # use a GitHub icon for my repo
