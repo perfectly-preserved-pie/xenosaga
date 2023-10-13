@@ -17,10 +17,11 @@ I used ChatGPT to craft the regexes for me.
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-1. Docker
-2. hi
+### Docker
+1. `docker pull strayingfromthepath:xenosaga`
+2. `docker run xenosaga`
 
-### Prerequisites
-
-What things you need to install the software and how to install them.
-
+### Python
+1. `git clone https://github.com/perfectly-preserved-pie/xenosaga.git`
+2. `pip install -r requirements.txt`
+3. `gunicorn -b 0.0.0.0:80 --workers=4 --preload app:server`
