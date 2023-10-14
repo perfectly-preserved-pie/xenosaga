@@ -27,7 +27,7 @@ jobs:
       with:
         hosts: ${{ secrets.HOST }}
         privateKey: ${{ secrets.PRIVATE_KEY }}
-        command: docker pull strayingfromthepath/larentals && docker restart wheretolivedotla
+        command: docker pull strayingfromthepath/xenosaga && docker restart xenosaga
 
     - name: Execute SSH commands on remote server for Dev
       if: needs.check_workflow.outputs.is_dev == 'true'
@@ -35,4 +35,4 @@ jobs:
       with:
         hosts: ${{ secrets.HOST }}
         privateKey: ${{ secrets.PRIVATE_KEY }}
-        command: docker pull strayingfromthepath/larentals:dev && docker restart wheretolivedotla-dev
+        command: docker pull strayingfromthepath/xenosaga:dev && docker restart xenosaga-dev
