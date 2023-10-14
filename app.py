@@ -106,8 +106,10 @@ app.layout = html.Div(
     dbc.Button("Episode I", id='btn-ep1', className="mr-2"),
     dbc.Button("Episode II", id='btn-ep2', className="mr-2"),
     dbc.Button("Episode III", id='btn-ep3', className="mr-2"),
-  ]),
-  html.Div(id='grid-container', style={'flex': '1'}),
+  ],
+  style={'flex': '0 0 auto'},
+  ),
+  html.Div(id='grid-container', style={'flex': '1 1 auto', 'overflow-x': 'scroll', 'overflow-y': 'auto'}),
   modal,
   # Add a hidden grid in the initial layout
   html.Div(dag.AgGrid(id='grid'), style={'display': 'none'}),
@@ -117,7 +119,7 @@ app.layout = html.Div(
   style={
     'display': 'flex',
     'flexDirection': 'column',
-    'height': '200vh'
+    'height': '100vh'
   },
 )
 
