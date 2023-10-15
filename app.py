@@ -173,7 +173,7 @@ def generate_column_defs(df):
       "suppressMenu": True
     }
   ]
-  # Add other columns except the "Name" column
+  # Add other columns except the "Name" or "uuid" column
   for i in df.columns:
     if i not in ["Name", "uuid"]:
       column_def = {
@@ -268,7 +268,7 @@ def open_modal(cell_clicked_data, close_btn_clicks, modal_open, grid_data):
     if not cell_clicked_data or 'rowIndex' not in cell_clicked_data:
       raise PreventUpdate
 
-    # Extract the name of the clicked enemy using rowId
+    # Extract the name of the clicked enemy using uuid
     row_id = cell_clicked_data['rowId']
     clicked_uuid = grid_data[int(row_id)]['uuid']
     return True, {"uuid": clicked_uuid}
@@ -312,7 +312,7 @@ def populate_modal(data, n1, n2, n3):
 
   # Exclude the UUID from the displayed data
   selected_row = selected_row.drop("uuid")
-  
+
   content = []
   for key, value in selected_row.items():
     if pd.api.types.is_numeric_dtype(value) and pd.notna(value):  # Check if value is numeric and not NaN
