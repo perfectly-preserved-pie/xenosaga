@@ -6,6 +6,7 @@ import dash
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
+import uuid
 
 external_stylesheets = [
   dbc.icons.BOOTSTRAP,
@@ -18,6 +19,11 @@ external_stylesheets = [
 ep1_df = pd.read_json('json/episode1.json') # Read the JSON files into dataframes 
 ep2_df = pd.read_json('json/episode2.json')
 ep3_df = pd.read_json('json/episode3.json')
+
+# Generate a unique ID for each row
+ep1_df['uuid'] = [str(uuid.uuid4()) for _ in range(len(ep1_df))]
+ep2_df['uuid'] = [str(uuid.uuid4()) for _ in range(len(ep2_df))]
+ep3_df['uuid'] = [str(uuid.uuid4()) for _ in range(len(ep3_df))]
 
 app = Dash(
   __name__, 
@@ -169,7 +175,7 @@ def generate_column_defs(df):
   ]
   # Add other columns except the "Name" column
   for i in df.columns:
-    if i != "Name":
+    if i not in ["Name", "uuid"]:
       column_def = {
         "field": i,
         "filter": "agNumberColumnFilter" if is_numeric_col(df, i) else "agTextColumnFilter",
@@ -264,8 +270,8 @@ def open_modal(cell_clicked_data, close_btn_clicks, modal_open, grid_data):
 
     # Extract the name of the clicked enemy using rowId
     row_id = cell_clicked_data['rowId']
-    clicked_name = grid_data[int(row_id)]['Name']
-    return True, {"name": clicked_name}
+    clicked_uuid = grid_data[int(row_id)]['uuid']
+    return True, {"uuid": clicked_uuid}
 
   else:
     raise PreventUpdate
@@ -295,15 +301,18 @@ def populate_modal(data, n1, n2, n3):
   elif latest_button == 'btn-ep3':
     df = ep3_df
 
-  # Check if the desired name exists in the dataset
-  selected_rows = df[df["Name"] == data["name"]]
+  # Check if the desired uuid exists in the dataset
+  selected_rows = df[df["uuid"] == data["uuid"]]
   if selected_rows.empty:
-    logger.error(f"Name {data['name']} not found in dataset.")
+    logger.error(f"UUID {data['uuid']} not found in dataset.")
     raise PreventUpdate
 
   selected_row = selected_rows.iloc[0]
   logger.debug(f"Selected Row Data: {selected_row}")  # Log the complete row data
 
+  # Exclude the UUID from the displayed data
+  selected_row = selected_row.drop("uuid")
+  
   content = []
   for key, value in selected_row.items():
     if pd.api.types.is_numeric_dtype(value) and pd.notna(value):  # Check if value is numeric and not NaN
