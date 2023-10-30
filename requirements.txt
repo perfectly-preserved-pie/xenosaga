@@ -4,5 +4,5 @@ dash-ag-grid==2.3.0
 dash==2.14.0
 gunicorn==21.2.0
 loguru==0.7.2
-pandas==2.1.1
+pandas==2.1.2
 requests==2.31.0
