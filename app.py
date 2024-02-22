@@ -16,9 +16,9 @@ external_stylesheets = [
 
 ]
 
-ep1_df = pd.read_json('assets/json/episode1.json') # Read the JSON files into dataframes 
-ep2_df = pd.read_json('assets/json/episode2.json')
-ep3_df = pd.read_json('assets/json/episode3.json')
+ep1_df = pd.read_json('assets/json/episode1.json', lines=True) # Read the JSON files into dataframes 
+ep2_df = pd.read_json('assets/json/episode2.json', lines=True)
+ep3_df = pd.read_json('assets/json/episode3.json', lines=True)
 
 # Generate a unique ID for each row
 ep1_df['uuid'] = [str(uuid.uuid4()) for _ in range(len(ep1_df))]
@@ -214,18 +214,14 @@ def generate_column_defs(df):
   [Input('tabs', 'value')]
 )
 def update_grid_data_and_columns(tab_value):
-  # Conditional data loading based on selected tab
   if tab_value == 'ep1':
-    data = pd.read_json('assets/json/episode1.json')
+    data = ep1_df
   elif tab_value == 'ep2':
-    data = pd.read_json('assets/json/episode2.json')
+    data = ep2_df
   elif tab_value == 'ep3':
-    data = pd.read_json('assets/json/episode3.json')
+    data = ep3_df
 
-  # Generate UUIDs for each row
-  data['uuid'] = [str(uuid.uuid4()) for _ in range(len(data))]
-
-  # Prepare rowData and columnDefs for the grid
+  # No need to generate UUIDs here anymore
   rowData = data.to_dict('records')
   columnDefs = generate_column_defs(data)
 
@@ -249,71 +245,70 @@ def update_column_size(_):
     Input("grid", "cellClicked"),
     Input("close", "n_clicks"),
   ],
-  [State("modal", "is_open"), State("grid", "rowData")]
+  [
+    State("modal", "is_open"),
+    State("grid", "rowData")
+  ]
 )
 def open_modal(cell_clicked_data, close_btn_clicks, modal_open, grid_data):
   ctx = dash.callback_context
+
   if not ctx.triggered:
-    return dash.no_update, dash.no_update
+    return no_update, no_update
 
-  button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+  trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-  if button_id == 'close':
-    return False, dash.no_update
+  if trigger_id == 'close':
+    return False, no_update
 
-  elif button_id == 'grid':
+  if trigger_id == 'grid':
     if not cell_clicked_data or 'rowIndex' not in cell_clicked_data:
       raise PreventUpdate
 
-    # Extract the name of the clicked enemy using uuid
+    # Assuming 'rowId' corresponds to the index in 'grid_data' and contains the 'uuid'
     row_id = cell_clicked_data['rowId']
     clicked_uuid = grid_data[int(row_id)]['uuid']
     return True, {"uuid": clicked_uuid}
 
-  else:
-    raise PreventUpdate
+  return no_update, no_update
 
 # Create a callback to populate the modal with the correct data
 @app.callback(
-    Output("modal-content", "children"),
-    [Input("clicked-cell-unique-value", "data")],
-    [State("tabs", "value")]
+  Output("modal-content", "children"),
+  [Input("clicked-cell-unique-value", "data")],
 )
-def populate_modal(data, tab_value):
-    if not data:
-        logger.debug("No data passed to modal.")
-        raise PreventUpdate
+def populate_modal(data):
+  if not data:
+    raise PreventUpdate
 
-    # Log the received UUID and tab value for debugging
-    logger.debug(f"Received UUID: {data['uuid']} for tab: {tab_value}")
+  # Assuming UUID uniqueness across datasets, no need to iterate if you adopt a different approach
+  datasets = {'ep1': ep1_df, 'ep2': ep2_df, 'ep3': ep3_df}
+  found_df = None
+  for name, df in datasets.items():
+    if data["uuid"] in df['uuid'].values:
+      found_df = df
+      break
 
-    # Dynamically select the data source based on the selected tab
-    if tab_value == 'ep1':
-        df = ep1_df
-    elif tab_value == 'ep2':
-        df = ep2_df
-    elif tab_value == 'ep3':
-        df = ep3_df
-    else:
-        logger.error(f"Invalid tab value: {tab_value}")
-        raise PreventUpdate
+  if found_df is None:
+    logger.error(f"UUID {data['uuid']} not found in any dataset.")
+    # Optionally return a user-friendly message in the modal
+    return dcc.Markdown("### Error: Details not found for the selected enemy.")
 
-    # Check and log if the UUID exists in the dataset
-    if data["uuid"] not in df['uuid'].values:
-        logger.error(f"UUID {data['uuid']} not found in the dataset for tab: {tab_value}.")
-        raise PreventUpdate
+  selected_row = found_df[found_df["uuid"] == data["uuid"]].iloc[0]
 
-    selected_row = df[df["uuid"] == data["uuid"]].iloc[0]
+  # Improved content generation with better handling for various data types and missing values
+  content = []
+  for key, value in selected_row.items():
+    if key == "uuid":  # Skip UUID in the modal content
+      continue
+    formatted_value = value if pd.notnull(value) else "N/A"  # Handle missing values
+    if pd.api.types.is_numeric_dtype(found_df[key]):
+      formatted_value = f"{value:,.0f}" if pd.notnull(value) else "N/A"
+    content.append(f"**{key}:** {formatted_value}")
 
-    content = [f"**{key}:** {value:,}" if pd.api.types.is_numeric_dtype(df[key]) and pd.notna(value) else f"**{key}:** {value}" for key, value in selected_row.items() if key != "uuid"]
+  generated_content = '  \n'.join(content)
 
-    logger.debug(f"Available UUIDs in dataset for tab {tab_value}: {df['uuid'].tolist()}")
-
-
-    generated_content = '  \n'.join(content)
-    return dcc.Markdown(generated_content)
-
-
+  return dcc.Markdown(generated_content)
 
 # Run the app if running locally
 if __name__ == '__main__':
