@@ -270,32 +270,24 @@ def populate_modal(data):
   if not data:
     raise PreventUpdate
 
+  # Consolidate dataset lookup into a single statement with a clearer structure
   datasets = {'ep1': ep1_df, 'ep2': ep2_df, 'ep3': ep3_df}
-  found_df = None
-  for name, df in datasets.items():
-    if data["uuid"] in df['uuid'].values:
-      found_df = df
-      break
+  found_df = next((df for df_name, df in datasets.items() if data["uuid"] in df['uuid'].values), None)
 
   if found_df is None:
     logger.error(f"UUID {data['uuid']} not found in any dataset.")
-    # Optionally return a user-friendly message in the modal
-    return dcc.Markdown("### Error: Details not found for the selected enemy.")
+    return html.P("Error: Details not found for the selected enemy.", className="modal-error-message")
 
-  selected_row = found_df[found_df["uuid"] == data["uuid"]].iloc[0]
+  # Efficiently retrieve the selected row
+  selected_row = found_df.loc[found_df['uuid'] == data['uuid']].iloc[0]
 
-  content = []
-  for key, value in selected_row.items():
-    if key == "uuid":  # Ignore UUID in the modal content
-      continue
-    formatted_value = value if pd.notnull(value) else "N/A"  # Handle missing values
-    if pd.api.types.is_numeric_dtype(found_df[key]):
-      formatted_value = f"{value:,.0f}" if pd.notnull(value) else "N/A"
-    content.append(f"**{key}:** {formatted_value}")
+  # Streamline content generation by using Dash HTML components for better layout control
+  content = [html.Div([
+    html.B(f"{key}: "),
+    f"{value if pd.notnull(value) else 'N/A'}"
+  ]) for key, value in selected_row.items() if key != "uuid"]
 
-  generated_content = '  \n'.join(content)
-
-  return dcc.Markdown(generated_content)
+  return html.Div(content, className="modal-content-wrapper")
 
 # Run the app if running locally
 if __name__ == '__main__':
