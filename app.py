@@ -20,11 +20,6 @@ ep1_df = pd.read_json('assets/json/episode1.json', lines=True) # Read the JSON f
 ep2_df = pd.read_json('assets/json/episode2.json', lines=True)
 ep3_df = pd.read_json('assets/json/episode3.json', lines=True)
 
-# Generate a unique ID for each row
-ep1_df['uuid'] = [str(uuid.uuid4()) for _ in range(len(ep1_df))]
-ep2_df['uuid'] = [str(uuid.uuid4()) for _ in range(len(ep2_df))]
-ep3_df['uuid'] = [str(uuid.uuid4()) for _ in range(len(ep3_df))]
-
 app = Dash(
   __name__, 
   external_stylesheets=external_stylesheets,
