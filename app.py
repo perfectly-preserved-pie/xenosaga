@@ -16,9 +16,9 @@ external_stylesheets = [
 
 ]
 
-ep1_df = pd.read_json('json/episode1.json') # Read the JSON files into dataframes 
-ep2_df = pd.read_json('json/episode2.json')
-ep3_df = pd.read_json('json/episode3.json')
+ep1_df = pd.read_json('assets/json/episode1.json') # Read the JSON files into dataframes 
+ep2_df = pd.read_json('assets/json/episode2.json')
+ep3_df = pd.read_json('assets/json/episode3.json')
 
 # Generate a unique ID for each row
 ep1_df['uuid'] = [str(uuid.uuid4()) for _ in range(len(ep1_df))]
