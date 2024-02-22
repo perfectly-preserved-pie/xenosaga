@@ -76,17 +76,6 @@ title_card = dbc.Card(
   body = True
 )
 
-tabs = dcc.Tabs(
-  id="tabs",
-  value='ep1',  # Default value set to Episode I
-  children=[
-    dcc.Tab(label='Episode I', value='ep1'),
-    dcc.Tab(label='Episode II', value='ep2'),
-    dcc.Tab(label='Episode III', value='ep3'),
-  ],
-)
-
-
 # Create a modal to display the selected enemy stats
 # The modal will be populated by the callback below
 modal = dbc.Modal(
@@ -110,13 +99,13 @@ app.layout = html.Div(
     dcc.Store(id='clicked-cell-unique-value'),
     html.Div(title_card),
     # Use dcc.Tabs for episode selection instead of buttons
-    dcc.Tabs(
+    dbc.Tabs(
       id='tabs',
-      value='ep1',  # Set default value to Episode I
+      active_tab='ep1',  # Set default active tab to Episode I
       children=[
-        dcc.Tab(label='Episode I', value='ep1'),
-        dcc.Tab(label='Episode II', value='ep2'),
-        dcc.Tab(label='Episode III', value='ep3'),
+        dbc.Tab(label='Episode I', tab_id='ep1'),
+        dbc.Tab(label='Episode II', tab_id='ep2'),
+        dbc.Tab(label='Episode III', tab_id='ep3'),
       ],
       style={'flex': '0 0 auto'},  # Style adjustments for tabs
     ),
@@ -209,23 +198,26 @@ def generate_column_defs(df):
 
 # A callback to generate the grid (lazy load) and the column definitions based on the selected tab
 @app.callback(
-  Output('grid', 'rowData'),
-  Output('grid', 'columnDefs'),
-  [Input('tabs', 'value')]
+  [Output('grid', 'rowData'), Output('grid', 'columnDefs')],
+  [Input('tabs', 'active_tab')]
 )
-def update_grid_data_and_columns(tab_value):
-  if tab_value == 'ep1':
+def update_grid_data_and_columns(active_tab):
+  if active_tab == 'ep1':
     data = ep1_df
-  elif tab_value == 'ep2':
+  elif active_tab == 'ep2':
     data = ep2_df
-  elif tab_value == 'ep3':
+  elif active_tab == 'ep3':
     data = ep3_df
+  else:
+    # Handle the case where the active tab is not one of the above
+    # For example, you could return an empty data set or raise PreventUpdate
+    # raise PreventUpdate
+    return [], []  # Return empty data and column definitions
 
-  # No need to generate UUIDs here anymore
   rowData = data.to_dict('records')
   columnDefs = generate_column_defs(data)
-
   return rowData, columnDefs
+
 
 # Create a callback to update the column size to autoSize
 # Gets triggered when the columnDefs property of the grid changes. This callback will then set the columnSize property to "autoSize"
