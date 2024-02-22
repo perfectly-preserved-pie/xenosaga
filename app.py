@@ -1,4 +1,4 @@
-from dash import Dash, dcc, html, no_update, ctx
+from dash import Dash, dcc, html, no_update, ctx, callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from loguru import logger
@@ -78,13 +78,14 @@ title_card = dbc.Card(
 
 tabs = dcc.Tabs(
   id="tabs",
-  value='/',
+  value='ep1',  # Default value set to Episode I
   children=[
-    dcc.Tab(label='Episode I', value='/'),
-    dcc.Tab(label='Episode II', value='/ep2'),
-    dcc.Tab(label='Episode III', value='/ep3'),
+    dcc.Tab(label='Episode I', value='ep1'),
+    dcc.Tab(label='Episode II', value='ep2'),
+    dcc.Tab(label='Episode III', value='ep3'),
   ],
 )
+
 
 # Create a modal to display the selected enemy stats
 # The modal will be populated by the callback below
@@ -105,30 +106,38 @@ server = app.server
 
 app.layout = html.Div(
   [
-  dcc.Location(id='url', refresh=False),
-  dcc.Store(id='clicked-cell-unique-value'),
-  html.Div(title_card),
-  html.Div([
-    dbc.Button("Episode I", id='btn-ep1', className="mr-2"),
-    dbc.Button("Episode II", id='btn-ep2', className="mr-2"),
-    dbc.Button("Episode III", id='btn-ep3', className="mr-2"),
+    dcc.Location(id='url', refresh=False),
+    dcc.Store(id='clicked-cell-unique-value'),
+    html.Div(title_card),
+    # Use dcc.Tabs for episode selection instead of buttons
+    dcc.Tabs(
+      id='tabs',
+      value='ep1',  # Set default value to Episode I
+      children=[
+        dcc.Tab(label='Episode I', value='ep1'),
+        dcc.Tab(label='Episode II', value='ep2'),
+        dcc.Tab(label='Episode III', value='ep3'),
+      ],
+      style={'flex': '0 0 auto'},  # Style adjustments for tabs
+    ),
+    # Container for the grid; make sure it's visible and properly styled
+    html.Div(
+      dag.AgGrid(
+        id='grid',
+        className="ag-theme-alpine-dark",
+        style={'width': '100%', 'height': 'calc(100vh - 200px)'},  # Adjust height as needed
+      ),
+      id='grid-container',
+      style={'flex': '1 1 auto', 'overflow': 'hidden'},  # Adjusted style for proper overflow handling
+    ),
+    modal,
   ],
-  style={'flex': '0 0 auto'},
-  ),
-  html.Div(id='grid-container', style={'flex': '1 1 auto', 'overflow-x': 'scroll', 'overflow-y': 'auto'}),
-  modal,
-  # Add a hidden grid in the initial layout
-  html.Div(dag.AgGrid(id='grid'), style={'display': 'none'}),
-  ],
-  # Set the flexbox direction to column
-  # This will make the grid fill the entire page
   style={
     'display': 'flex',
     'flexDirection': 'column',
     'height': '100vh'
   },
 )
-
 
 # Create a function to generate the column definitions based on the dataframe
 def generate_column_defs(df):
@@ -198,41 +207,29 @@ def generate_column_defs(df):
         
   return column_defs
 
-# A callback to generate the grid
+# A callback to generate the grid (lazy load) and the column definitions based on the selected tab
 @app.callback(
-  Output('grid-container', 'children'),
   Output('grid', 'rowData'),
   Output('grid', 'columnDefs'),
-  [
-    Input('btn-ep1', 'n_clicks'),
-    Input('btn-ep2', 'n_clicks'),
-    Input('btn-ep3', 'n_clicks')
-  ]
+  [Input('tabs', 'value')]
 )
-def update_grid(n1, n2, n3):
-  ctx = dash.callback_context
-  if not ctx.triggered:
-    data = ep1_df  # default data
-  else:
-    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-    if button_id == 'btn-ep1':
-      data = ep1_df
-    elif button_id == 'btn-ep2':
-      data = ep2_df
-    elif button_id == 'btn-ep3':
-      data = ep3_df
+def update_grid_data_and_columns(tab_value):
+  # Conditional data loading based on selected tab
+  if tab_value == 'ep1':
+    data = pd.read_json('assets/json/episode1.json')
+  elif tab_value == 'ep2':
+    data = pd.read_json('assets/json/episode2.json')
+  elif tab_value == 'ep3':
+    data = pd.read_json('assets/json/episode3.json')
 
-  grid = dag.AgGrid(
-    id='grid',
-    rowData=data.to_dict('records'),
-    columnDefs=generate_column_defs(data),
-    dashGridOptions={"tooltipShowDelay": 300},
-    #defaultColDef={"editable": False,  "tooltipComponent": "CustomTooltip"},
-    className="ag-theme-alpine-dark",
-    style={'height': '100%'}
-    # ...other grid parameters...
-  )
-  return grid, data.to_dict('records'), generate_column_defs(data)
+  # Generate UUIDs for each row
+  data['uuid'] = [str(uuid.uuid4()) for _ in range(len(data))]
+
+  # Prepare rowData and columnDefs for the grid
+  rowData = data.to_dict('records')
+  columnDefs = generate_column_defs(data)
+
+  return rowData, columnDefs
 
 # Create a callback to update the column size to autoSize
 # Gets triggered when the columnDefs property of the grid changes. This callback will then set the columnSize property to "autoSize"
@@ -278,77 +275,44 @@ def open_modal(cell_clicked_data, close_btn_clicks, modal_open, grid_data):
 
 # Create a callback to populate the modal with the correct data
 @app.callback(
-  Output("modal-content", "children"),
-  [Input("clicked-cell-unique-value", "data")],
-  [State("btn-ep1", "n_clicks"), State("btn-ep2", "n_clicks"), State("btn-ep3", "n_clicks")]
+    Output("modal-content", "children"),
+    [Input("clicked-cell-unique-value", "data")],
+    [State("tabs", "value")]
 )
-def populate_modal(data, n1, n2, n3):
-  if not data:
-    raise PreventUpdate
+def populate_modal(data, tab_value):
+    if not data:
+        logger.debug("No data passed to modal.")
+        raise PreventUpdate
 
-  # Determine the correct dataframe based on the clicked episode button
-  clicks = {
-    'btn-ep1': n1 or 0,  # Default to 0 if None
-    'btn-ep2': n2 or 0,
-    'btn-ep3': n3 or 0
-  }
-  latest_button = max(clicks, key=clicks.get)
+    # Log the received UUID and tab value for debugging
+    logger.debug(f"Received UUID: {data['uuid']} for tab: {tab_value}")
 
-  if latest_button == 'btn-ep1':
-    df = ep1_df
-  elif latest_button == 'btn-ep2':
-    df = ep2_df
-  elif latest_button == 'btn-ep3':
-    df = ep3_df
-
-  # Check if the desired uuid exists in the dataset
-  selected_rows = df[df["uuid"] == data["uuid"]]
-  if selected_rows.empty:
-    logger.error(f"UUID {data['uuid']} not found in dataset.")
-    raise PreventUpdate
-
-  selected_row = selected_rows.iloc[0]
-  logger.debug(f"Selected Row Data: {selected_row}")  # Log the complete row data
-
-  # Exclude the UUID from the displayed data
-  selected_row = selected_row.drop("uuid")
-
-  content = []
-  for key, value in selected_row.items():
-    if pd.api.types.is_numeric_dtype(value) and pd.notna(value):  # Check if value is numeric and not NaN
-      formatted_value = f"{int(value):,}"  # Format as integer with thousands separator
+    # Dynamically select the data source based on the selected tab
+    if tab_value == 'ep1':
+        df = ep1_df
+    elif tab_value == 'ep2':
+        df = ep2_df
+    elif tab_value == 'ep3':
+        df = ep3_df
     else:
-      formatted_value = "N/A" if pd.isna(value) else value  # Replace NaN with "N/A", otherwise use value as-is
-        
-    logger.debug(f"Key: {key}, Formatted Value: {formatted_value}")  # Log each key-value pair
-    content.append(f"**{key}:** {formatted_value}  \n")  # Use two spaces and a newline character for separate lines
+        logger.error(f"Invalid tab value: {tab_value}")
+        raise PreventUpdate
 
-  generated_content = ''.join(content)
-  logger.debug(f"Generated Content: {generated_content}")  # Log the generated content
-  return dcc.Markdown(generated_content)
+    # Check and log if the UUID exists in the dataset
+    if data["uuid"] not in df['uuid'].values:
+        logger.error(f"UUID {data['uuid']} not found in the dataset for tab: {tab_value}.")
+        raise PreventUpdate
 
-# Create a callback to update the active state of the episode buttons
-@app.callback(
-  Output('btn-ep1', 'active'),
-  Output('btn-ep2', 'active'),
-  Output('btn-ep3', 'active'),
-  Input('btn-ep1', 'n_clicks'),
-  Input('btn-ep2', 'n_clicks'),
-  Input('btn-ep3', 'n_clicks')
-)
-def update_button_active_state(n1, n2, n3):
-  ctx = dash.callback_context
-  if not ctx.triggered:
-    return True, False, False  # Set "Episode I" button as active by default
-  button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-  if button_id == 'btn-ep1':
-    return True, False, False
-  elif button_id == 'btn-ep2':
-    return False, True, False
-  elif button_id == 'btn-ep3':
-    return False, False, True
-  else:
-    return True, False, False  # Default case
+    selected_row = df[df["uuid"] == data["uuid"]].iloc[0]
+
+    content = [f"**{key}:** {value:,}" if pd.api.types.is_numeric_dtype(df[key]) and pd.notna(value) else f"**{key}:** {value}" for key, value in selected_row.items() if key != "uuid"]
+
+    logger.debug(f"Available UUIDs in dataset for tab {tab_value}: {df['uuid'].tolist()}")
+
+
+    generated_content = '  \n'.join(content)
+    return dcc.Markdown(generated_content)
+
 
 
 # Run the app if running locally
