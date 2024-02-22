@@ -208,10 +208,7 @@ def update_grid_data_and_columns(active_tab):
     data = ep2_df
   elif active_tab == 'ep3':
     data = ep3_df
-  else:
-    # Handle the case where the active tab is not one of the above
-    # For example, you could return an empty data set or raise PreventUpdate
-    # raise PreventUpdate
+  else: # Handle the case where the active tab is not one of the above
     return [], []  # Return empty data and column definitions
 
   rowData = data.to_dict('records')
@@ -273,7 +270,6 @@ def populate_modal(data):
   if not data:
     raise PreventUpdate
 
-  # Assuming UUID uniqueness across datasets, no need to iterate if you adopt a different approach
   datasets = {'ep1': ep1_df, 'ep2': ep2_df, 'ep3': ep3_df}
   found_df = None
   for name, df in datasets.items():
@@ -288,10 +284,9 @@ def populate_modal(data):
 
   selected_row = found_df[found_df["uuid"] == data["uuid"]].iloc[0]
 
-  # Improved content generation with better handling for various data types and missing values
   content = []
   for key, value in selected_row.items():
-    if key == "uuid":  # Skip UUID in the modal content
+    if key == "uuid":  # Ignore UUID in the modal content
       continue
     formatted_value = value if pd.notnull(value) else "N/A"  # Handle missing values
     if pd.api.types.is_numeric_dtype(found_df[key]):
