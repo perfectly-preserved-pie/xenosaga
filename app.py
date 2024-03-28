@@ -12,6 +12,13 @@ ep1_df = pd.read_json('assets/json/episode1.json', lines=True)
 ep2_df = pd.read_json('assets/json/episode2.json', lines=True)
 ep3_df = pd.read_json('assets/json/episode3.json', lines=True)
 
+# Create a global lookup dictionary
+data_lookup = {
+  row['uuid']: row.to_dict()
+  for df in [ep1_df, ep2_df, ep3_df]
+  for _, row in df.iterrows()
+}
+
 external_stylesheets = [
   dbc.icons.BOOTSTRAP,
   dbc.icons.FONT_AWESOME,
@@ -163,15 +170,16 @@ def toggle_modal(cell_clicked_data, close_btn_clicks, is_modal_open, grid_data):
   prevent_initial_call=True
 )
 def update_modal_content(data):
-  if not data:
+  if not data or 'uuid' not in data:
     raise PreventUpdate
-  datasets = {'ep1': ep1_df, 'ep2': ep2_df, 'ep3': ep3_df}
-  found_df = next((df for df_name, df in datasets.items() if data["uuid"] in df['uuid'].values), None)
-  if found_df is None:
-    logger.error(f"UUID {data['uuid']} not found in any dataset.")
+
+  # Access the selected row data directly from the lookup
+  selected_row_data = data_lookup.get(data['uuid'])
+  if not selected_row_data:
     return html.P("Error: Details not found for the selected enemy.", className="modal-error-message")
-  selected_row = found_df.loc[found_df['uuid'] == data['uuid']].iloc[0]
-  content = [html.Div([html.B(f"{key}: "), f"{value if pd.notnull(value) else 'N/A'}"]) for key, value in selected_row.items() if key != "uuid"]
+
+  # Construct the modal content
+  content = [html.Div([html.B(f"{key}: "), f"{value if value is not None else 'N/A'}"]) for key, value in selected_row_data.items() if key != "uuid"]
   return html.Div(content, className="modal-content-wrapper")
 
 # Gunicorn server
