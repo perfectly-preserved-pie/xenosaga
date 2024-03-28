@@ -184,7 +184,7 @@ def update_modal_content(data):
   content = [
     html.Div([
       html.B(f"{key}: "), 
-      f"{value:,}" if isinstance(value, (int, float)) else f"{value}"  
+      "{:,}".format(int(value)) if isinstance(value, (int, float)) else f"{value}"
     ]) for key, value in selected_row_data.items() if key != "uuid"
   ]
   return html.Div(content, className="modal-content-wrapper")
