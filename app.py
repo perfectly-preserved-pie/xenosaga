@@ -174,5 +174,8 @@ def update_modal_content(data):
   content = [html.Div([html.B(f"{key}: "), f"{value if pd.notnull(value) else 'N/A'}"]) for key, value in selected_row.items() if key != "uuid"]
   return html.Div(content, className="modal-content-wrapper")
 
+# Gunicorn server
+server = app.server
+
 if __name__ == '__main__':
   app.run_server(debug=True)
