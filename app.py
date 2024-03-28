@@ -92,6 +92,7 @@ app.layout = html.Div(
   [
     dcc.Location(id='url', refresh=False),
     dcc.Store(id='clicked-cell-unique-value'),
+    dcc.Store(id='active-tab-data'),
     html.Div(title_card),
     # Use dcc.Tabs for episode selection instead of buttons
     dbc.Tabs(
@@ -193,7 +194,7 @@ def generate_column_defs(df):
 
 # A callback to generate the grid (lazy load) and the column definitions based on the selected tab
 @app.callback(
-  [Output('grid', 'rowData'), Output('grid', 'columnDefs')],
+  [Output('grid', 'rowData'), Output('grid', 'columnDefs'), Output('active-tab-data', 'data')],
   [Input('tabs', 'active_tab')]
 )
 def update_grid_data_and_columns(active_tab):
@@ -208,7 +209,7 @@ def update_grid_data_and_columns(active_tab):
 
   rowData = data.to_dict('records')
   columnDefs = generate_column_defs(data)
-  return rowData, columnDefs
+  return rowData, columnDefs, rowData
 
 
 # Create a callback to update the column size to autoSize
