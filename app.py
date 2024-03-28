@@ -170,16 +170,20 @@ def toggle_modal(cell_clicked_data, close_btn_clicks, is_modal_open, grid_data):
   prevent_initial_call=True
 )
 def update_modal_content(data):
+  logger.info(f"Received data: {data}")
   if not data or 'uuid' not in data:
+    logger.error("Data is missing or doesn't contain UUID.")
     raise PreventUpdate
 
-  # Access the selected row data directly from the lookup
   selected_row_data = data_lookup.get(data['uuid'])
   if not selected_row_data:
+    logger.error(f"UUID {data['uuid']} not found in data lookup.")
     return html.P("Error: Details not found for the selected enemy.", className="modal-error-message")
 
-  # Construct the modal content
-  content = [html.Div([html.B(f"{key}: "), f"{value if value is not None else 'N/A'}"]) for key, value in selected_row_data.items() if key != "uuid"]
+  content = [
+    html.Div([html.B(f"{key}: "), f"{value if value is not None else 'N/A'}"])
+    for key, value in selected_row_data.items() if key != "uuid"
+  ]
   return html.Div(content, className="modal-content-wrapper")
 
 # Gunicorn server
