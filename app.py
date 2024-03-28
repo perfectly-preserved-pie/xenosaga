@@ -123,6 +123,7 @@ def generate_column_defs(df: pd.DataFrame) -> list:
         "sortable": True,
         "suppressMenu": True,
         "type": "numericColumn" if is_numeric_col(df, i) else "textColumn",
+        "valueFormatter": "function(params) { return new Intl.NumberFormat('en-US').format(params.value); }" if is_numeric_col(df, i) else None,
       }
       column_defs.append(column_def)
 
@@ -181,8 +182,10 @@ def update_modal_content(data):
     return html.P("Error: Details not found for the selected enemy.", className="modal-error-message")
 
   content = [
-    html.Div([html.B(f"{key}: "), f"{value if value is not None else 'N/A'}"])
-    for key, value in selected_row_data.items() if key != "uuid"
+    html.Div([
+      html.B(f"{key}: "), 
+      f"{value:,}" if isinstance(value, (int, float)) else f"{value}"  
+    ]) for key, value in selected_row_data.items() if key != "uuid"
   ]
   return html.Div(content, className="modal-content-wrapper")
 
