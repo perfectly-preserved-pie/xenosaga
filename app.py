@@ -269,11 +269,27 @@ def open_and_populate_modal(cell_clicked_data, close_btn_clicks, modal_open, gri
     # Efficiently retrieve the selected row
     selected_row = found_df.loc[found_df['uuid'] == data['uuid']].iloc[0]
 
+    def format_value(value):
+      """Format the value for display. If the value is a number, format it with commas. Otherwise, return the value as is."""
+      if value is None or value == '':
+        return 'N/A'
+      try:
+        numeric_value = float(value)
+        if numeric_value.is_integer():
+          return f"{int(numeric_value):,}"
+        return f"{numeric_value:,}"
+      except (ValueError, TypeError):
+        return value
+
+
     # Streamline content generation by using Dash HTML components for better layout control
     content = [html.Div([
       html.B(f"{key}: "),
-      f"{value if pd.notnull(value) else 'N/A'}"
-    ]) for key, value in selected_row.items() if key != "uuid"]
+      html.Span(f"{format_value(value) if pd.notnull(value) else 'N/A'}")
+    ], 
+    style={'margin-bottom': '10px'}) for key, value in selected_row.items() if key != "uuid"]
+
+    logger.debug(f"Selected enemy stats: {content}")
 
     return True, html.Div(content, className="modal-content-wrapper")
 
