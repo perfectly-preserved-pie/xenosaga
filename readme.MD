@@ -4,7 +4,7 @@ This is a modern, mobile optimized web application that hosts a searchable and s
 ## Framework
 This website uses a mix of:
 
-* [Dash](https://plotly.com/) for the layout and HTML structures.
+* [Dash Open Source](https://dash.plotly.com/) for the layout and HTML structures.
 * [Dash AG-Grid](https://dash.plotly.com/dash-ag-grid) for the grid/table.
 
 ## How To Use
