@@ -225,7 +225,7 @@ def update_column_size(_):
 # Based on https://dashaggrid.pythonanywhere.com/other-examples/popup-from-cell-click
 @app.callback(
   Output("modal", "is_open"),
-  Output("clicked-cell-unique-value", "data"),
+  Output("modal-content", "children"),
   [
     Input("grid", "cellClicked"),
     Input("close", "n_clicks"),
@@ -235,7 +235,7 @@ def update_column_size(_):
     State("grid", "rowData")
   ]
 )
-def open_modal(cell_clicked_data, close_btn_clicks, modal_open, grid_data):
+def open_and_populate_modal(cell_clicked_data, close_btn_clicks, modal_open, grid_data):
   ctx = dash.callback_context
 
   if not ctx.triggered:
@@ -253,37 +253,32 @@ def open_modal(cell_clicked_data, close_btn_clicks, modal_open, grid_data):
     # Assuming 'rowId' corresponds to the index in 'grid_data' and contains the 'uuid'
     row_id = cell_clicked_data['rowId']
     clicked_uuid = grid_data[int(row_id)]['uuid']
-    return True, {"uuid": clicked_uuid}
+
+    # Populate the modal with the correct data
+    data = {"uuid": clicked_uuid}
+    if not data:
+      raise PreventUpdate
+
+    # Consolidate dataset lookup into a single statement with a clearer structure
+    datasets = {'ep1': ep1_df, 'ep2': ep2_df, 'ep3': ep3_df}
+    found_df = next((df for df_name, df in datasets.items() if data["uuid"] in df['uuid'].values), None)
+
+    if found_df is None:
+      logger.error(f"UUID {data['uuid']} not found in any dataset.")
+      return True, html.P("Error: Details not found for the selected enemy.", className="modal-error-message")
+
+    # Efficiently retrieve the selected row
+    selected_row = found_df.loc[found_df['uuid'] == data['uuid']].iloc[0]
+
+    # Streamline content generation by using Dash HTML components for better layout control
+    content = [html.Div([
+      html.B(f"{key}: "),
+      f"{value if pd.notnull(value) else 'N/A'}"
+    ]) for key, value in selected_row.items() if key != "uuid"]
+
+    return True, html.Div(content, className="modal-content-wrapper")
 
   return no_update, no_update
-
-# Create a callback to populate the modal with the correct data
-@app.callback(
-  Output("modal-content", "children"),
-  [Input("clicked-cell-unique-value", "data")],
-)
-def populate_modal(data):
-  if not data:
-    raise PreventUpdate
-
-  # Consolidate dataset lookup into a single statement with a clearer structure
-  datasets = {'ep1': ep1_df, 'ep2': ep2_df, 'ep3': ep3_df}
-  found_df = next((df for df_name, df in datasets.items() if data["uuid"] in df['uuid'].values), None)
-
-  if found_df is None:
-    logger.error(f"UUID {data['uuid']} not found in any dataset.")
-    return html.P("Error: Details not found for the selected enemy.", className="modal-error-message")
-
-  # Efficiently retrieve the selected row
-  selected_row = found_df.loc[found_df['uuid'] == data['uuid']].iloc[0]
-
-  # Streamline content generation by using Dash HTML components for better layout control
-  content = [html.Div([
-    html.B(f"{key}: "),
-    f"{value if pd.notnull(value) else 'N/A'}"
-  ]) for key, value in selected_row.items() if key != "uuid"]
-
-  return html.Div(content, className="modal-content-wrapper")
 
 # Run the app if running locally
 if __name__ == '__main__':
