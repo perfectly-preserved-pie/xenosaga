@@ -2,7 +2,7 @@
 This is a modern, mobile optimized web application that hosts a searchable and sortable database of all the enemies in the Xenosaga PS2 series. Every enemy has detailed stats, weaknessess, loot drops, etc. Each game has been split into its own separate table/tab for organization.
 
 ## Framework
-This website uses a mix of:
+This website's frontend uses a mix of:
 
 * [Dash Open Source](https://dash.plotly.com/) for the layout and HTML structures.
 * [Dash AG-Grid](https://dash.plotly.com/dash-ag-grid) for the grid/table.
