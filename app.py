@@ -1,88 +1,21 @@
-from dash import Dash, dcc, html, no_update
+from components.app_config import create_app, external_stylesheets
+from components.html_components import title_card, modal
+from dash import Dash, dcc, html, no_update, callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from loguru import logger
-import dash
+from utils.dataframes import ep1_df, ep2_df, ep3_df
+from utils.functions import generate_column_defs
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
 
-external_stylesheets = [
-  dbc.icons.BOOTSTRAP,
-  dbc.icons.FONT_AWESOME,
-  dbc.themes.DARKLY,
-  "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates@V1.0.2/dbc.min.css", # https://github.com/AnnMarieW/dash-bootstrap-templates#dbccss--stylesheet
-
-]
-
-ep1_df = pd.read_json('assets/json/episode1.json', lines=True) # Read the JSON files into dataframes 
-ep2_df = pd.read_json('assets/json/episode2.json', lines=True)
-ep3_df = pd.read_json('assets/json/episode3.json', lines=True)
-
-app = Dash(
-  __name__, 
-  external_stylesheets=external_stylesheets,
-  external_scripts=[
-    # Plausible analytics
-    {
-      'src': "https://plausible.automateordie.io/js/plausible.js",
-      'data-domain': "enemies.xenosaga.games",
-      'defer': True,
-      'type': 'application/javascript'
-    },
-  ],
-  use_pages=False,
-  # Because we're displaying tab content dynamically, we need to suppress callback exceptions
-  # https://dash.plotly.com/callback-gotchas#callbacks-require-all-inputs-and-states-to-be-rendered-on-the-page
-  suppress_callback_exceptions=True, 
-  # Add meta tags for mobile devices
-  # https://community.plotly.com/t/reorder-website-for-mobile-view/33669/5?
-  meta_tags = [
-    {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-  ],
-)
+# Create the Dash app
+app = create_app(external_stylesheets, [])
 
 # Set the page title
 app.title = "Xenosaga Enemy Database"
 app.description = "A searchable and sortable table of all enemies in the Xenosaga series, organized by game."
-
-title_card = dbc.Card(
-  [
-    html.H3("Xenosaga Enemy Database", className="card-title"),
-    html.I("Mystic powers, grant me a miracle! ✨", style={"margin-bottom": "10px"}),
-    html.P(
-      "This is a mobile-friendly searchable, sortable, and filterable table of all enemies in the Xenosaga series, organized by game.",
-      style = {"margin-bottom": "0px"}
-    ),
-    html.P(
-      "Clicking on anywhere on a row will display the selected enemy's stats in a popup.",
-      style = {"margin-bottom": "0px"}
-    ),
-    html.I( # use a GitHub icon for my repo
-      className="bi bi-github",
-      style = {
-        "margin-right": "5px",
-        "margin-left": "0px"
-      },
-    ),
-    html.A("GitHub", href='https://github.com/perfectly-preserved-pie/xenosaga', target='_blank'),
-  ],
-  body = True
-)
-
-# Create a modal to display the selected enemy stats
-# The modal will be populated by the callback below
-modal = dbc.Modal(
-  [
-    dbc.ModalHeader("Selected Enemy Stats"),
-    dbc.ModalBody(id="modal-content"),
-    dbc.ModalFooter(
-        dbc.Button("Close", id="close", className="ml-auto", n_clicks=0)
-    ),
-  ],
-  id="modal",
-  is_open=False,
-)
 
 # For Gunicorn
 server = app.server
@@ -122,74 +55,6 @@ app.layout = html.Div(
     'height': '100vh'
   },
 )
-
-# Create a function to generate the column definitions based on the dataframe
-def generate_column_defs(df):
-  # Determine if a column is numeric based on a sampling of 100 values from the column
-  # I did this way because I'm too lazy to properly cast dtypes for the 30+ columns across all 3 episode dataframes
-  def is_numeric_col(df, column_name):
-    # If dtype is already numeric, return True
-    if pd.api.types.is_numeric_dtype(df[column_name].dtype):
-      return True
-    # If dtype is object, sample some rows and test if they can be converted to numbers
-    non_na_values = df[column_name].dropna() # Drop NA values
-    sample_values = non_na_values.sample(min(100, len(non_na_values))).tolist()
-    try:
-      # Try converting the sample values to numbers
-      [float(x) for x in sample_values]
-      return True
-    except ValueError:
-      # If conversion fails, it's not a numeric column
-      return False
-
-  # Extracts the starting number from a cell's content, especially if the content represents a range like "100-200"
-  # This is used to sort the numeric columns properly
-  def get_value_getter(column_name):
-    if is_numeric_col(df, column_name):
-      return {"function": f"return params.data.{column_name} && params.data.{column_name}.split('-')[0] ? Number(params.data.{column_name}.split('-')[0]) : null"}
-    else:
-      return None
-  
-  # Create the column definitions
-  # The Name column is special because it's the only column that's pinned to the left
-  column_defs = [
-    {
-      "field": "Name",  # Set the field to "Name" for the Name column
-      "minWidth": 150,  # Set a minimum width for the Name column
-      "pinned": "left",  # Pin the Name column to the left
-      "resizable": True,
-      "sortable": True,
-      "type": "textColumn",
-      "filter": "agTextColumnFilter",
-      "floatingFilter": True,
-      "floatingFilterComponentParams": {"filterPlaceholder": "Search..."},
-      "suppressMenu": True
-    }
-  ]
-  # Add other columns except the "Name" or "uuid" column
-  for i in df.columns:
-    if i not in ["Name", "uuid"]:
-      column_def = {
-        "field": i,
-        "filter": "agNumberColumnFilter" if is_numeric_col(df, i) else "agTextColumnFilter",
-        "floatingFilter": True,
-        "floatingFilterComponentParams": {"suppressFilterButton": False} if is_numeric_col(df, i) else {"filterPlaceholder": "Search..."},
-        "minWidth": 120,
-        "resizable": True,
-        "sortable": True,
-        "suppressMenu": True,
-        "tooltipField": i, # Set the tooltip field to the column name
-        "type": "numericColumn" if is_numeric_col(df, i) else "textColumn",
-        "valueFormatter": {"function": "d3.format(',.0f')(params.value)"} if is_numeric_col(df, i) else None,
-        "valueGetter": get_value_getter(i),
-      }
-      # Only add tooltipComponent for string columns
-      if not is_numeric_col(df, i):
-        column_def["tooltipComponent"] = "CustomTooltip"
-      
-      column_defs.append(column_def)
-        
-  return column_defs
 
 # A callback to generate the grid (lazy load) and the column definitions based on the selected tab
 @app.callback(
@@ -235,7 +100,7 @@ def update_column_size(_):
   ]
 )
 def open_and_populate_modal(cell_clicked_data, close_btn_clicks, modal_open, grid_data):
-  ctx = dash.callback_context
+  ctx = callback_context
 
   if not ctx.triggered:
     return no_update, no_update
