@@ -89,6 +89,7 @@ def update_column_size(_):
 # Based on https://dashaggrid.pythonanywhere.com/other-examples/popup-from-cell-click
 @app.callback(
   Output("modal", "is_open"),
+  Output("modal-header", "children"),
   Output("modal-content", "children"),
   [
     Input("grid", "cellClicked"),
@@ -103,13 +104,13 @@ def open_and_populate_modal(cell_clicked_data, close_btn_clicks, modal_open, gri
   ctx = callback_context
 
   if not ctx.triggered:
-    return no_update, no_update
+    return no_update, no_update, no_update
 
   trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
   if trigger_id == 'close':
-    return False, no_update
-
+    return False, no_update, no_update
+  
   if trigger_id == 'grid':
     if not cell_clicked_data or 'rowIndex' not in cell_clicked_data:
       raise PreventUpdate
@@ -165,6 +166,12 @@ def open_and_populate_modal(cell_clicked_data, close_btn_clicks, modal_open, gri
           spans.append(", ")
       return spans
 
+    # Retrieve the enemy's name
+    enemy_name = selected_row['Name']
+
+    # Remove the 'Name' key-value pair from the selected_row dictionary
+    # This is to prevent the 'Name' key from being displayed in the modal body, as it's already displayed in the modal header
+    selected_row = selected_row.drop('Name')
 
     # Streamline content generation by using Dash HTML components for better layout control
     content = []
@@ -178,9 +185,9 @@ def open_and_populate_modal(cell_clicked_data, close_btn_clicks, modal_open, gri
 
     logger.debug(f"Selected enemy stats: {content}")
 
-    return True, html.Div(content, className="modal-content-wrapper")
+    return True, html.H4(enemy_name), html.Div(content, className="modal-content-wrapper")
 
-  return no_update, no_update
+  return no_update, no_update, no_update
 
 # Run the app if running locally
 if __name__ == '__main__':

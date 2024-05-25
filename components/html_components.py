@@ -26,10 +26,10 @@ title_card = dbc.Card(
 )
 
 # Create a modal to display the selected enemy stats
-# The modal will be populated by the callback below
+# The modal will be populated by the callback
 modal = dbc.Modal(
   [
-    dbc.ModalHeader("Selected Enemy Stats"),
+    dbc.ModalHeader(id="modal-header"),
     dbc.ModalBody(id="modal-content"),
     dbc.ModalFooter(
         dbc.Button("Close", id="close", className="ml-auto", n_clicks=0)
