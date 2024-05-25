@@ -6,7 +6,6 @@ import dash
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc
 import pandas as pd
-import uuid
 
 external_stylesheets = [
   dbc.icons.BOOTSTRAP,
