@@ -45,11 +45,10 @@ app.layout = html.Div(
         style={
           'width': '100%',
           'height': 'calc(100vh - 200px)',
-          'overflowX': 'auto',
         },
       ),
       id='grid-container',
-      style={'flex': '1 1 auto', 'overflow': 'hidden'},  # Adjusted style for proper overflow handling
+      style={'flex': '1 1 auto', 'overflow': 'auto'}, # Allow horizontal and vertical scrolling
     ),
     modal,
   ],
