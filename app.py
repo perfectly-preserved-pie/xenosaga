@@ -280,14 +280,36 @@ def open_and_populate_modal(cell_clicked_data, close_btn_clicks, modal_open, gri
         return f"{numeric_value:,}"
       except (ValueError, TypeError):
         return value
+      
+    def apply_element_style(text):
+      """Colorize the text based on the element. Preserves spaces and commas."""
+      color_styles = {
+        "Lightning": "yellow",
+        "Fire": "red",
+        "Ice": "lightblue"
+      }
+      parts = text.split(", ")
+      spans = []
+      for i, part in enumerate(parts):
+        color = color_styles.get(part, None)
+        if color:
+          spans.append(html.Span(part, style={'color': color}))
+        else:
+          spans.append(html.Span(part))
+        if i < len(parts) - 1:
+          spans.append(", ")
+      return spans
 
 
     # Streamline content generation by using Dash HTML components for better layout control
-    content = [html.Div([
-      html.B(f"{key}: "),
-      html.Span(f"{format_value(value) if pd.notnull(value) else 'N/A'}")
-    ], 
-    style={'margin-bottom': '10px'}) for key, value in selected_row.items() if key != "uuid"]
+    content = []
+    for key, value in selected_row.items():
+      if key != "uuid":
+        if isinstance(value, str):
+          spans = apply_element_style(value)
+          content.append(html.Div([html.B(f"{key}: "), *spans], style={'margin-bottom': '10px'}))
+        else:
+          content.append(html.Div([html.B(f"{key}: "), html.Span(f"{format_value(value) if pd.notnull(value) else 'N/A'}")], style={'margin-bottom': '10px'}))
 
     logger.debug(f"Selected enemy stats: {content}")
 
