@@ -1,6 +1,6 @@
 from components.app_config import create_app, external_stylesheets
 from components.html_components import title_card, modal
-from dash import Dash, dcc, html, no_update, callback_context
+from dash import dcc, html, no_update, callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from loguru import logger
@@ -42,7 +42,11 @@ app.layout = html.Div(
       dag.AgGrid(
         id='grid',
         className="ag-theme-alpine-dark",
-        style={'width': '100%', 'height': 'calc(100vh - 200px)'},  # Adjust height as needed
+        style={
+          'width': '100%',
+          'height': 'calc(100vh - 200px)',
+          'overflowX': 'auto',
+        },
       ),
       id='grid-container',
       style={'flex': '1 1 auto', 'overflow': 'hidden'},  # Adjusted style for proper overflow handling
