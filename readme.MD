@@ -3,8 +3,9 @@ This is a modern, mobile optimized web application that hosts a searchable and s
 
 ## Framework
 This website uses a mix of:
-[Dash](https://plotly.com/) for the layout and HTML structures
-[Dash Ag-Grid] (https://dash.plotly.com/dash-ag-grid) for the grid/table.
+
+* [Dash](https://plotly.com/) for the layout and HTML structures
+* [Dash Ag-Grid] (https://dash.plotly.com/dash-ag-grid) for the grid/table.
 
 ## How To Use
 Each column in the grid can be resized, filtered, and sorted as you'd like. Clicking anywhere on a row will make a modal pop up that contains that selected enemey's stats.
