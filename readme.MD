@@ -1,6 +1,11 @@
 # Xenosaga Enemy Database
 This is a modern, mobile optimized web application that hosts a searchable and sortable database of all the enemies in the Xenosaga PS2 series. Every enemy has detailed stats, weaknessess, loot drops, etc. Each game has been split into its own separate table/tab for organization.
 
+## Framework
+This website uses a mix of:
+[Dash](https://plotly.com/) for the layout and HTML structures
+[Dash Ag-Grid] (https://dash.plotly.com/dash-ag-grid) for the grid/table.
+
 ## How To Use
 Each column in the grid can be resized, filtered, and sorted as you'd like. Clicking anywhere on a row will make a modal pop up that contains that selected enemey's stats.
 
@@ -14,8 +19,6 @@ The data comes from the following sources, which I extracted using BeautifulSoup
 I used ChatGPT to craft the regexes for me.
 
 ## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Docker
 1. `docker pull strayingfromthepath:xenosaga`
