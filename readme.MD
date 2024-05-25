@@ -8,7 +8,9 @@ This website's frontend uses a mix of:
 * [Dash AG-Grid](https://dash.plotly.com/dash-ag-grid) for the grid/table.
 
 ## How To Use
-Each column in the grid can be resized, filtered, and sorted as you'd like. Clicking anywhere on a row will make a modal pop up that contains that selected enemey's stats.
+Each column in the grid can be resized, filtered, and sorted as you'd like. 
+
+Clicking anywhere on a row will make a modal pop up that contains that selected enemy's stats.
 
 ## Data Sources
 The data comes from the following sources, which I extracted using BeautifulSoup 4 and regex (except for Episode 2, which I had to do manually):
