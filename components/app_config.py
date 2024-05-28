@@ -24,11 +24,12 @@ def create_app(external_stylesheets: List[str], external_scripts: List[Dict[str,
     Dash: The configured Dash app.
   """
   app = Dash(
-    __name__, 
+    __name__,
+    assets_folder='../assets',
     external_stylesheets=external_stylesheets,
     external_scripts=external_scripts,
     use_pages=False,
-    suppress_callback_exceptions=True, 
+    suppress_callback_exceptions=True,
     meta_tags = [
       {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ],
