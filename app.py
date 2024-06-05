@@ -155,7 +155,10 @@ def open_and_populate_modal(cell_clicked_data, close_btn_clicks, modal_open, gri
       color_styles = {
         "Lightning": "yellow",
         "Fire": "red",
-        "Ice": "lightblue"
+        "Ice": "lightblue",
+        "Yes": "green",
+        "No": "red",
+        "Cannot": "red",
       }
       parts = text.split(", ")
       spans = []
