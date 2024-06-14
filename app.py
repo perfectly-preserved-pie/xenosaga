@@ -11,7 +11,15 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 
 # Create the Dash app
-app = create_app(external_stylesheets, [])
+app = create_app(
+  external_stylesheets = external_stylesheets,
+  external_scripts = { # Plausible analytics
+    'src': "https://plausible.automateordie.io/js/plausible.js",
+    'data-domain': "enemies.xenosaga.games",
+    'defer': True,
+    'type': 'application/javascript'
+  }
+)
 
 # Set the page title
 app.title = "Xenosaga Enemy Database"
