@@ -1,5 +1,5 @@
 beautifulsoup4==4.12.3
-dash_bootstrap_components==1.6.0
+dash_bootstrap_components==1.7.1
 dash-ag-grid==31.3.0
 dash==2.18.2
 gunicorn==23.0.0
