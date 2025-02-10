@@ -1,4 +1,4 @@
-beautifulsoup4==4.12.3
+beautifulsoup4==4.13.3
 dash_bootstrap_components==1.6.0
 dash-ag-grid==31.3.0
 dash==2.18.2
