@@ -207,4 +207,4 @@ def open_and_populate_modal(cell_clicked_data, close_btn_clicks, modal_open, gri
 
 # Run the app if running locally
 if __name__ == '__main__':
-  app.run_server(debug=True)
+  app.run(debug=True)
