@@ -37,4 +37,5 @@ modal = dbc.Modal(
   ],
   id="modal",
   is_open=False,
+  scrollable=True,
 )
