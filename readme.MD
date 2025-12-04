@@ -31,5 +31,5 @@ I used ChatGPT to craft the regexes for me.
 
 ### Python
 1. `git clone https://github.com/perfectly-preserved-pie/xenosaga.git`
-2. `pip install -r requirements.txt`
+2. `uv pip install .`
 3. `gunicorn -b 0.0.0.0:80 --workers=4 --preload app:server`
