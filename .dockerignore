@@ -3,3 +3,4 @@
 .cache
 .github/
 .venv/
+assets/json
