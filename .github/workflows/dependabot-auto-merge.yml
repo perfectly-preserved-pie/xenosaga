@@ -28,7 +28,7 @@ jobs:
         uses: astral-sh/setup-uv@v3
 
       - name: Install dependencies
-        run: uv sync --no-dev
+        run: uv sync --frozen
 
       - name: Check for Python runtime issues
         run: uv run python -m compileall app.py components utils webscraping
@@ -37,7 +37,7 @@ jobs:
         run: uv run python -m pip check
 
       - name: Start application server
-        run: uv run gunicorn --bind 0.0.0.0:8000 --workers=1 app:server --preload --pid gunicorn.pid --daemon
+        run: uv run gunicorn --bind 127.0.0.1:8000 --workers=1 app:server --preload --pid gunicorn.pid --daemon
 
       - name: Verify health endpoint
         run: |
@@ -54,7 +54,15 @@ jobs:
         if: always()
         run: |
           if [ -f gunicorn.pid ]; then
-            kill "$(cat gunicorn.pid)"
+            pid="$(cat gunicorn.pid)"
+            kill "$pid"
+            for i in {1..5}; do
+              if ! kill -0 "$pid" 2>/dev/null; then
+                exit 0
+              fi
+              sleep 1
+            done
+            kill -9 "$pid"
           fi
 
       - name: Merge Dependabot PR
