@@ -30,6 +30,7 @@ def create_app(external_stylesheets: List[str], external_scripts: List[Dict[str,
     external_scripts=external_scripts,
     use_pages=False,
     suppress_callback_exceptions=True,
+    health_endpoint="health", # https://dash.plotly.com/app-monitoring
     meta_tags = [
       {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ],
