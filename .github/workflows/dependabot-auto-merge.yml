@@ -57,12 +57,14 @@ jobs:
             pid="$(cat gunicorn.pid)"
             kill "$pid"
             for i in {1..5}; do
-              if ! kill -0 "$pid" 2>/dev/null; then
-                exit 0
-              fi
-              sleep 1
-            done
-            kill -9 "$pid"
+            if ! kill -0 "$pid" 2>/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+            if kill -0 "$pid" 2>/dev/null; then
+              kill -9 "$pid"
+            fi
           fi
 
       - name: Merge Dependabot PR
