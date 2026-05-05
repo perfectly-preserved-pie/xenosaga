@@ -1,3 +1,6 @@
+# Moved
+This repo has moved to https://github.com/perfectly-preserved-pie/ludex!
+
 # Xenosaga Enemy Database
 This is a modern, mobile optimized web application that hosts a searchable and sortable database of all the enemies in the Xenosaga PS2 series. Every enemy has detailed stats, weaknesses, loot drops, etc. 
 
